@@ -1,18 +1,65 @@
-import { AppSidebar } from '@/modules/Dashboard/components/app-sidebar'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import ContentHeader from '../components/ContentHeader'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 const DashboardPage = () => {
   return (
 
-    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
-        <div className="aspect-video rounded-xl bg-muted/50" />
-      </div>
-      <div className="flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-    </div>
+    <section className="w-full flex flex-col gap-4 ">
+      
+      <section className="w-full mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Users</CardTitle>
+            <CardDescription>Total Users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>100</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Users</CardTitle>
+            <CardDescription>Total Users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>100</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Users</CardTitle>
+            <CardDescription>Total Users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>100</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Total Users</CardTitle>
+            <CardDescription>Total Users</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>100</p>
+          </CardContent>
+        </Card>
+
+      </section>
+      <section className="w-full grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Revenue</CardTitle>
+            <CardDescription>Total Revenue</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>100</p>
+          </CardContent>
+        </Card>
+
+
+      </section>
+
+
+    </section>
 
   )
 }

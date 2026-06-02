@@ -13,7 +13,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ClipboardListIcon, Clock02Icon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, ModernTvFourKIcon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon } from "@hugeicons/core-free-icons"
+import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, ModernTvFourKIcon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon } from "@hugeicons/core-free-icons"
 import { Link } from "react-router"
 
 // This is sample data.
@@ -22,12 +22,12 @@ const data = {
     {
       title: "Dashboard",
       url: "#",
-      icon: LayoutBottomIcon,
+     
       items: [
         {
           title: "Overview",
           url: "/",
-          icon: LayoutBottomIcon,
+          icon: ComputerIcon,
         },
         
       ],
@@ -37,7 +37,7 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Users",
+          title: "Users Management",
           url: "/users",
           icon: UserAccountIcon,
         },
@@ -60,15 +60,15 @@ const data = {
         },
         {
           title: "Episode List",
-          url: "/episode-list",
+          url: "/episodeList",
           icon: Video02Icon,
           // isActive: true,
         },
-        {
-          title: "Content",
-          url: "/content",
-          icon:ModernTvFourKIcon
-        },
+        // {
+        //   title: "Content",
+        //   url: "/content",
+        //   icon:ModernTvFourKIcon
+        // },
        
       ],
     },
@@ -173,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuButton asChild>
                   
                   <Link to={item.url} className="font-medium">
-                    {item.icon && <HugeiconsIcon icon={item.icon} strokeWidth={2} className="size-4" />}
+                    {/* {item.icon && <HugeiconsIcon icon={item.icon} strokeWidth={2} className="size-4" />} */}
                     {item.title}
                   </Link>
                 </SidebarMenuButton>

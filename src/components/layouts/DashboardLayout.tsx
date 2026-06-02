@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "../ui/sidebar";
 import { Outlet } from "react-router";
 
 const DashboardLayout = () => {
+  
     return (
         <SidebarProvider
             style={
