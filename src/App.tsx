@@ -9,24 +9,33 @@ import DashboardPage from './modules/Dashboard/page/Dashboard'
 import CategoryPage from './modules/category/page/Category'
 import EpisodeListPage from './modules/episodeList/pages/EpisodeList'
 import SeriesListPage from './modules/seriesList/pages/SeriesList'
+import ProtectedRoute from './modules/auth/components/ProtectedRoute'
+import NotFound from './modules/home/pages/NotFound'
 
 
 function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />}>
-      </Route>
-      <Route  element={<DashboardLayout />}>
-        <Route path="/" element={<DashboardPage />}/> 
-        <Route path="/users" element={<UsersManagementPage />}/> 
-        <Route path="/seriesCategory" element={<CategoryPage/>}/> 
-        <Route path="/series" element={<SeriesListPage/>}/> 
-        <Route path="/episodeList" element={<EpisodeListPage />}/> 
-        <Route path="/products" element={<DashboardPage />}/> 
-        <Route path="/staff" element={<DashboardPage />}/> 
-        
-      </Route>
+      {/* Public routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<LoginPage />} />
+      <Route path="*" element={<NotFound />} />
 
+      {/* Protected Routes for App*/}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/users" element={<UsersManagementPage />} />
+          <Route path="/seriesCategory" element={<CategoryPage />} />
+          <Route path="/series" element={<SeriesListPage />} />
+          <Route path="/episodeList" element={<EpisodeListPage />} />
+          <Route path="/products" element={<DashboardPage />} />
+          <Route path="/staff" element={<DashboardPage />} />
+
+        </Route>
+
+      </Route>
     </Routes>
   )
 }

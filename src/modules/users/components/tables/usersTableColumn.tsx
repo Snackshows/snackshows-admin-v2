@@ -4,17 +4,9 @@ import { Button } from "@/components/ui/button"
 import { TaskEdit02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
+import type { UserData } from "../../api/userManagement/userManagement.types"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-// export type Payment = {
-//   id: string
-//   amount: number
-//   status: "pending" | "processing" | "success" | "failed"
-//   email: string
-// }
-
-export const userTableColumns: ColumnDef<any>[] = [
+export const userTableColumns: ColumnDef<UserData>[] = [
   {
     accessorKey: "status",
     header: "No",

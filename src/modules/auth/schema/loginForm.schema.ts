@@ -2,7 +2,7 @@ import * as z from "zod"
 
 export const loginFormSchema = z.object({
   email: z
-    .string()
+    .email()
     .min(5, "Email must be at least 5 characters.")
     .max(32, "Email must be at most 32 characters."),
   password: z
