@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { loginService } from '../api/loginPage/login.endpoint'
 import { useAuth } from '@/context/AuthContext'
 import { useNavigate } from 'react-router'
+import toast from 'react-hot-toast'
 
 const LoginPage = () => {
     const { setUser } = useAuth();
@@ -35,10 +36,14 @@ const LoginPage = () => {
             })
 
             setUser(response.data.data.user);
+            toast.success("Login successful")
             navigate('/');
             console.log(response)
 
         } catch (error) {
+
+
+            toast.error("Login failed")
             console.error(error)
         }
 

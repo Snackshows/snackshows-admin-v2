@@ -1,58 +1,91 @@
 
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { TaskEdit02Icon } from "@hugeicons/core-free-icons"
+import { TaskEdit02Icon, Delete02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
+import type { Category } from "../../api/categoryManagement/categoryManagement.types"
+import { EditCategoryDialog } from "../dialogs/EditCategoryDialog"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-// export type Payment = {
-//   id: string
-//   amount: number
-//   status: "pending" | "processing" | "success" | "failed"
-//   email: string
-// }
-
-export const categoryColumns: ColumnDef<any>[] = [
+export const categoryColumns: ColumnDef<Category>[] = [
   {
-    accessorKey: "status",
-    header: "No",
-  },
-  {
-    accessorKey: "email",
-    header: "UserName",
-  },
-  {
-    accessorKey: "amount",
-    header: "Login Type",
+    accessorKey: "serial",
+    header: "#",
+    cell: ({ row }) => row.index + 1,
   },
   {
     accessorKey: "uniqueId",
     header: "Unique ID",
   },
   {
-    accessorKey: "uniqueId",
-    header: "Subscription",
+    accessorKey: "name",
+    header: "Name",
   },
   {
-    accessorKey: "updatedAt",
-    header: "Last Login",
+    accessorKey: "description",
+    header: "Description",
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => {
+      return (
+        <img
+          src={row.original.image}
+          alt={row.original.name}
+          className="w-12 h-12 object-cover rounded"
+        />
+      )
+    },
+  },
+  {
+    accessorKey: "isActive",
+    header: "Status",
+    cell: ({ row }) => {
+      return (
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.isActive
+          ? "bg-green-100 text-green-800"
+          : "bg-red-100 text-red-800"
+          }`}>
+          {row.original.isActive ? "Active" : "Inactive"}
+        </span>
+      )
+    },
   },
   {
     accessorKey: "createdAt",
     header: "Created At",
+    cell: ({ row }) => {
+      return new Date(row.original.createdAt).toLocaleDateString()
+    },
   },
   {
-    accessorKey: "createdAt",
-    header: "Action",
+    accessorKey: "actions",
+    header: "Actions",
     cell: ({ row }) => {
+      const [isEditOpen, setIsEditOpen] = useState(false)
+
       return (
-        <div>
-          <Button><HugeiconsIcon icon={TaskEdit02Icon} /></Button>
-          <Button>Edit</Button>
-          <Button>Delete</Button>
-        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setIsEditOpen(true)}>
+            <HugeiconsIcon icon={TaskEdit02Icon} />
+          </Button>
+
+          <EditCategoryDialog
+            category={row.original}
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            onSave={(updatedCategory) => {
+              console.log("Save category:", updatedCategory)
+              setIsEditOpen(false)
+            }}
+          />
+
+          <Button size="sm" variant="outline">
+            <HugeiconsIcon icon={Delete02Icon} />
+          </Button>
+        </div >
       )
     },
   },

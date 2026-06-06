@@ -46,7 +46,7 @@ export const userTableColumns: ColumnDef<any>[] = [
   {
     accessorKey: "createdAt",
     header: "Action",
-    cell: ({ row }) => {
+    cell: () => {
       return (
         <div>
           <Button><HugeiconsIcon icon={TaskEdit02Icon} /></Button>

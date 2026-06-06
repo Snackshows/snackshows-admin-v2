@@ -13,7 +13,7 @@ const UsersManagementPage = () => {
           Users Management
         </SectionHeader>
         <SectionContent>
-          <ControllableDataTable columns={userTableColumns} data={data || []} />
+          <ControllableDataTable loading={isLoading} columns={userTableColumns} data={data || []} />
         </SectionContent>
       </SectionCard>
     </section>

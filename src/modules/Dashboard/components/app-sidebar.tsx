@@ -13,8 +13,8 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, ModernTvFourKIcon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon } from "@hugeicons/core-free-icons"
-import { Link } from "react-router"
+import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon } from "@hugeicons/core-free-icons"
+import { Link, useLocation } from "react-router"
 
 // This is sample data.
 const data = {
@@ -22,14 +22,14 @@ const data = {
     {
       title: "Dashboard",
       url: "#",
-     
+
       items: [
         {
           title: "Overview",
           url: "/",
           icon: ComputerIcon,
         },
-        
+
       ],
     },
     {
@@ -43,7 +43,7 @@ const data = {
         },
       ],
     },
-    
+
     {
       title: "Flim Management",
       url: "#",
@@ -69,7 +69,7 @@ const data = {
         //   url: "/content",
         //   icon:ModernTvFourKIcon
         // },
-       
+
       ],
     },
     {
@@ -90,14 +90,14 @@ const data = {
         {
           title: "Package List",
           url: "/package-list",
-          icon:Money03Icon
+          icon: Money03Icon
         },
         {
           title: "Order List",
           url: "/order-list",
-          icon:Clock02Icon
+          icon: Clock02Icon
         },
-       
+
       ],
     },
     {
@@ -146,8 +146,9 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation();
   return (
-    <Sidebar variant="floating" {...props}>
+    <Sidebar variant="floating" {...props} >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -171,7 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {data.navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
-                  
+
                   <Link to={item.url} className="font-medium">
                     {/* {item.icon && <HugeiconsIcon icon={item.icon} strokeWidth={2} className="size-4" />} */}
                     {item.title}
@@ -180,10 +181,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {item.items?.length ? (
                   <SidebarMenuSub className="ml-0 border-l-0 px-1.5">
                     {item.items.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild isActive={item.isActive}>
+                      <SidebarMenuSubItem key={item.title} >
+                        <SidebarMenuSubButton asChild isActive={location.pathname === item.url} className={
+                          location.pathname === item.url
+                            ? "font-medium bg-primary"
+                            : ""
+                        }>
                           <Link to={item.url}>
-                            {item.icon && <HugeiconsIcon icon={item.icon} strokeWidth={2} className="size-4" />}
+                            {'icon' in item && <HugeiconsIcon icon={item.icon} strokeWidth={2} className="size-4" />}
                             {item.title}
                           </Link>
                         </SidebarMenuSubButton>

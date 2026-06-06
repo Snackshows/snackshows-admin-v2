@@ -8,6 +8,7 @@ export interface UserData {
   phoneNumber: string | null;
   isBlocked: boolean;
   joinedOn: string;
+  role: string | null;
 }
 
 export interface UsersData {

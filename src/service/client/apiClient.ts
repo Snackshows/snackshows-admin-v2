@@ -1,61 +1,68 @@
 import { envConfig } from '@/config/config';
 import axios from 'axios';
 
+const baseURL = envConfig().api;
 
-///////////////////////////////////////////////////////////////////////////////////////
-// Dont Change anything here If change It breaks the File Upload feature and post api//
-///////////////////////////////////////////////////////////////////////////////////////
-const { api } = envConfig();
 
-console.log('Api Data', api);
 
+// Create axios instance with default config
 const apiClient = axios.create({
-	baseURL: api,
+	baseURL: baseURL,
 	withCredentials: true,
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
-// Automatically attach token on every request
-apiClient.interceptors.request.use((config) => {
-	const token = localStorage.getItem('auth_token');
-	const user = localStorage.getItem('user')?.toString();
+// Function to set store ID in the headers
 
-	if (token) {
-		config.headers.Authorization = `Bearer ${token}`;
-		if (user) {
-			const parsedUser = JSON.parse(user);
-			const verifierId = parsedUser?.roleId?.toString();
-			config.headers['verifier'] = verifierId ?? '';
-		}
-	}
+// // Initialize with no store ID
+// setStoreId(null);
 
-	// ✅ Set Content-Type per request type
-	if (config.data instanceof FormData) {
-		// Let axios auto-set: multipart/form-data; boundary=...
-		delete config.headers['Content-Type'];
-	} else {
-		// Explicitly set JSON for all other requests
-		config.headers['Content-Type'] = 'application/json';
-	}
-
-	return config;
-});
+// Add store ID in every request automatically
+// apiClient.interceptors.request.use((config) => {
+// 	if (currentStoreId) {
+// 		config.headers['X-Store-ID'] = currentStoreId;
+// 	} else {
+// 		delete config.headers['X-Store-ID'];
+// 	}
+// 	return config;
+// });
 
 apiClient.interceptors.response.use(
 	(response) => {
 		return response;
 	},
-	(error) => {
-		console.log(error);
-		const { status, config } = error.response;
+	async function (error) {
+		console.log('Error betwwen Api response=====>>>>>', error);
+		const originalRequest = error.config;
 
-		if (status === 401) {
-			if (!config.url.includes('/user/login')) {
-				localStorage.clear();
-				window.location.replace('/');
+		if (error.response.status === 401 && !originalRequest._retry) {
+			originalRequest._retry = true;
+			try {
+				await generateRefreshToken();
+				return apiClient(originalRequest);
+			} catch (refreshError) {
+				window.location.href = '/login';
+				console.log('Token refresh failed:', refreshError);
 			}
 		}
 		return Promise.reject(error);
 	}
 );
 
+export const generateRefreshToken = async () => {
+	try {
+		const response = await apiClient('/auth/refresh-token', {
+			withCredentials: true,
+		});
+		console.log('Get new accesstoken', response);
+		return response.data;
+	} catch (error) {
+		console.error(error);
+		// toast.error(error?.response?.data?.error.message);
+	}
+};
+
 export default apiClient;
+
