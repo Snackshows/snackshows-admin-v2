@@ -24,6 +24,7 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 	className?: string;
 	loading?: boolean;
+	actionButton?: React.ReactNode;
 }
 
 export function ControllableDataTable<TData, TValue>({
@@ -31,6 +32,7 @@ export function ControllableDataTable<TData, TValue>({
 	data,
 	className,
 	loading = false,
+	actionButton,
 }: DataTableProps<TData, TValue>) {
 	const [globalFilter, setGlobalFilter] = useState('');
 	const [pagination, setPagination] = useState({
@@ -89,12 +91,15 @@ export function ControllableDataTable<TData, TValue>({
 					</select>
 					entries
 				</span>
-				<Input
-					placeholder="Search All columns..."
-					value={globalFilter ?? ''}
-					onChange={(e) => setGlobalFilter(e.target.value)}
-					className="max-w-sm"
-				/>
+				<div className="flex items-center gap-2">
+					{actionButton}
+					<Input
+						placeholder="Search All columns..."
+						value={globalFilter ?? ''}
+						onChange={(e) => setGlobalFilter(e.target.value)}
+						className="max-w-sm"
+					/>
+				</div>
 			</div>
 
 			<div className="w-full overflow-hidden rounded-none border">
@@ -111,9 +116,9 @@ export function ControllableDataTable<TData, TValue>({
 											{header.isPlaceholder
 												? null
 												: flexRender(
-														header.column.columnDef.header,
-														header.getContext()
-													)}
+													header.column.columnDef.header,
+													header.getContext()
+												)}
 										</TableHead>
 									);
 								})}

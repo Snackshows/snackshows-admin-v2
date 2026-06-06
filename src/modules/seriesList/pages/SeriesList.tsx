@@ -2,9 +2,12 @@ import { SectionCard, SectionContent, SectionHeader } from "@/components/ui/sect
 import { seriesTableColumns } from "../components/tables/seriesTableColumns"
 import { ControllableDataTable } from "@/components/ui/controllable-data-table"
 import { useGetSeriesQuery } from "../api/seriesManagement/seriesManagement.endpoint"
+import { Button } from "@/components/ui/button"
+import { Add01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 const SeriesListPage = () => {
-  const { data } = useGetSeriesQuery()
+  const { data, isLoading } = useGetSeriesQuery()
   return (
     <section className='w-full p-4'>
       <SectionCard className="w-full">
@@ -12,7 +15,17 @@ const SeriesListPage = () => {
           Series List
         </SectionHeader>
         <SectionContent>
-          <ControllableDataTable columns={seriesTableColumns} data={data || []} />
+          <ControllableDataTable
+            loading={isLoading}
+            columns={seriesTableColumns}
+            data={data || []}
+            actionButton={
+              <Button>
+                <HugeiconsIcon icon={Add01Icon} />
+                Add Series
+              </Button>
+            }
+          />
         </SectionContent>
       </SectionCard>
     </section>

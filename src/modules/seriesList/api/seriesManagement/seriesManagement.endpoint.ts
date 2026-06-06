@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { GetAllSeriesResponse } from "./seriesManagement.types";
 
 const getAllSeries = async () => {
-  const response = await apiClient.get<GetAllSeriesResponse>("/series");
+  const response = await apiClient.get<GetAllSeriesResponse>("/videoSeries");
   return response.data.data;
 }
 

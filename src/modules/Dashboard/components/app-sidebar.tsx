@@ -84,12 +84,12 @@ const data = {
       ],
     },
     {
-      title: "Package Management",
+      title: "Subscription Management",
       url: "#",
       items: [
         {
-          title: "Package List",
-          url: "/package-list",
+          title: "Subscription Plan",
+          url: "/payments",
           icon: Money03Icon
         },
         {

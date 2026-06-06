@@ -10,9 +10,12 @@ import DashboardPage from './modules/Dashboard/page/Dashboard'
 import CategoryPage from './modules/category/page/Category'
 import EpisodeListPage from './modules/episodeList/pages/EpisodeList'
 import SeriesListPage from './modules/seriesList/pages/SeriesList'
+import SeriesDetailsPage from './modules/seriesList/pages/SeriesDetails'
 import ProtectedRoute from './modules/auth/components/ProtectedRoute'
 import NotFound from './modules/home/pages/NotFound'
 import PaymentPage from './modules/payment/pages/paymentpage'
+import EpisodeDetailsPage from './modules/episodeList/pages/EpisodeDetailsPage'
+import StaffManagementPage from './modules/staff/pages/StaffManagement'
 
 
 function App() {
@@ -29,12 +32,14 @@ function App() {
         <Route element={<DashboardLayout />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/users" element={<UsersManagementPage />} />
-          <Route path="/users/:id" element={<UserDetailsPage />} />
+          <Route path="/users/:userId" element={<UserDetailsPage />} />
           <Route path="/seriesCategory" element={<CategoryPage />} />
           <Route path="/series" element={<SeriesListPage />} />
+          <Route path="/series/:seriesId" element={<SeriesDetailsPage />} />
           <Route path="/episodeList" element={<EpisodeListPage />} />
+          <Route path="/episodeList/:episodeId" element={<EpisodeDetailsPage />} />
           <Route path="/products" element={<DashboardPage />} />
-          <Route path="/staff" element={<DashboardPage />} />
+          <Route path="/staff" element={<StaffManagementPage />} />
           <Route path="/payments" element={<PaymentPage />} />
 
         </Route>

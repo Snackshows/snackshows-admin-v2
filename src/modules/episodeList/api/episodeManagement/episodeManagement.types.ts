@@ -1,16 +1,20 @@
+export interface Series {
+  id: string;
+  name: string;
+}
+
 export interface Episode {
   id: string;
-  uniqueId: string;
+  series: Series;
   title: string;
   description: string;
+  episodeNumber: number;
   thumbnail: string;
   videoUrl: string;
-  seriesId: string;
-  seasonNumber: number;
-  episodeNumber: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  status: string;
+  duration: number;
+  isLocked: boolean;
+  releaseDate: string;
 }
 
 export interface GetAllEpisodesResponse {
