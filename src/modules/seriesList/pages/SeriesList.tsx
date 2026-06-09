@@ -5,6 +5,8 @@ import { useGetSeriesQuery } from "../api/seriesManagement/seriesManagement.endp
 import { Button } from "@/components/ui/button"
 import { Add01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { Link } from "react-router"
+import { SeriesCreateDialog } from "../components/dialog/SeriesCreateDialog"
 
 const SeriesListPage = () => {
   const { data, isLoading } = useGetSeriesQuery()
@@ -20,10 +22,14 @@ const SeriesListPage = () => {
             columns={seriesTableColumns}
             data={data || []}
             actionButton={
-              <Button>
-                <HugeiconsIcon icon={Add01Icon} />
-                Add Series
-              </Button>
+              <SeriesCreateDialog>
+
+                <Button>
+                  <HugeiconsIcon icon={Add01Icon} />
+                  Add Series
+                </Button>
+              </SeriesCreateDialog>
+              
             }
           />
         </SectionContent>

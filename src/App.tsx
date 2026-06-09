@@ -35,6 +35,7 @@ function App() {
           <Route path="/users/:userId" element={<UserDetailsPage />} />
           <Route path="/seriesCategory" element={<CategoryPage />} />
           <Route path="/series" element={<SeriesListPage />} />
+          <Route path="/series/create" element={<SeriesListPage />} />
           <Route path="/series/:seriesId" element={<SeriesDetailsPage />} />
           <Route path="/episodeList" element={<EpisodeListPage />} />
           <Route path="/episodeList/:episodeId" element={<EpisodeDetailsPage />} />

@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Series } from "../../api/seriesManagement/seriesManagement.types"
 import { useNavigate } from "react-router"
+import { Badge } from "@/components/ui/badge"
 
 export const seriesTableColumns: ColumnDef<Series>[] = [
   {
@@ -16,7 +17,7 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     accessorKey: "thumbnail",
     header: "Image",
     cell: ({ row }) => {
-      const thumbnail = row.getValue("thumbnail") as string
+      const thumbnail = row.original.thumbnail as string
       return (
         <img
           src={thumbnail}
@@ -27,37 +28,47 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     },
   },
   {
-    accessorKey: "category",
-    header: "Category",
+    accessorKey: "banner",
+    header: "Banner",
     cell: ({ row }) => {
-      const categories = row.getValue("category") as { name: string }[]
-      return categories?.[0]?.name || "-"
+      const banner = row.original.banner as string
+      return (
+        <img
+          src={banner}
+          alt="banner"
+          className="aspect-video w-12 rounded-md object-cover"
+        />
+      )
     },
   },
+
   {
     accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
+    header: "Series Info",
     cell: ({ row }) => {
-      const description = row.getValue("description") as string
+      const name = row.original.name
+      const description = row.original.description
       return (
-        <div className="max-w-[200px] truncate" title={description}>
-          {description}
+        <div className="w-full max-w-48  truncate text-left flex flex-col">
+          <div className="text-md font-semibold">{name}</div>
+          <div className="w-full ">{description}</div>
         </div>
       )
     },
   },
+
   {
-    accessorKey: "releaseDate",
-    header: "Date",
+    accessorKey: "category",
+    header: "Category",
     cell: ({ row }) => {
-      const date = row.getValue("releaseDate") as string
-      return date ? new Date(date).toLocaleDateString() : "-"
+      const categories = row.getValue("category") as { name: string }[]
+      return <div>
+        <Badge>{categories?.[0]?.name || "-"}</Badge>
+      </div>
     },
   },
+ 
+ 
   {
     accessorKey: "totalEpisodes",
     header: "Total Episodes",

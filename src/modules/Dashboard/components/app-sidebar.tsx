@@ -100,32 +100,32 @@ const data = {
 
       ],
     },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
+    // {
+    //   title: "Architecture",
+    //   url: "#",
+    //   items: [
+    //     {
+    //       title: "Accessibility",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Fast Refresh",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Next.js Compiler",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Supported Browsers",
+    //       url: "#",
+    //     },
+    //     {
+    //       title: "Turbopack",
+    //       url: "#",
+    //     },
+    //   ],
+    // },
     {
       title: "System Settings",
       url: "#",
@@ -149,17 +149,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
   return (
     <Sidebar variant="floating" {...props} >
-      <SidebarHeader>
+      <SidebarHeader >
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link to="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} className="size-4" />
+              <Link to="/" className="border">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg  text-sidebar-primary-foreground">
+                  
+                  <img src={"/logo.png"} alt="Snackshows Admin" className="size-8" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">Documentation</span>
-                  <span className="">v1.0.0</span>
+                  <span className="font-medium">Snackshows Admin</span>
+                 
                 </div>
               </Link>
             </SidebarMenuButton>

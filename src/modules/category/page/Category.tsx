@@ -2,6 +2,10 @@ import { SectionCard, SectionContent, SectionHeader } from "@/components/ui/sect
 import { categoryColumns } from "../components/tables/categoryColums"
 import { ControllableDataTable } from "@/components/ui/controllable-data-table"
 import { useGetCategoriesQuery } from "../api/categoryManagement/categoryManagement.endpoint"
+import { CreateCategoryDialog } from "../components/dialogs/CreateCategoryDialog"
+import { Add01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Button } from "@/components/ui/button"
 
 
 const CategoryPage = () => {
@@ -13,7 +17,15 @@ const CategoryPage = () => {
           Category Management
         </SectionHeader>
         <SectionContent>
-          <ControllableDataTable loading={isLoading} columns={categoryColumns} data={data || []} />
+          <ControllableDataTable
+            loading={isLoading}
+            columns={categoryColumns}
+            data={data || []} actionButton={<CreateCategoryDialog>
+              <Button>
+                <HugeiconsIcon icon={Add01Icon} />
+                Add Category
+              </Button>
+            </CreateCategoryDialog>} />
         </SectionContent>
       </SectionCard>
     </section>

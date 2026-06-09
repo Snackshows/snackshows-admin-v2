@@ -8,6 +8,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { Category } from "../../api/categoryManagement/categoryManagement.types"
 import { EditCategoryDialog } from "../dialogs/EditCategoryDialog"
 
+
 export const categoryColumns: ColumnDef<Category>[] = [
   {
     accessorKey: "serial",
