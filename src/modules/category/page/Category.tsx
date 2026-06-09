@@ -6,10 +6,15 @@ import { CreateCategoryDialog } from "../components/dialogs/CreateCategoryDialog
 import { Add01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@/components/ui/button"
+import { useEffect } from "react"
 
 
 const CategoryPage = () => {
-  const { data, isLoading } = useGetCategoriesQuery()
+  const { data, isLoading, refetch} = useGetCategoriesQuery()
+
+  useEffect(() => {
+    refetch()
+  }, [])
   return (
     <section className='w-full p-4'>
       <SectionCard className="w-full">

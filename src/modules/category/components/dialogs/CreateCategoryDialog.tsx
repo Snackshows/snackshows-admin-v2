@@ -1,5 +1,6 @@
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -15,6 +16,9 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
+import { useCreateCategoryMutation } from "../../api/createCategory/createCategory.endpoint"
+import toast from "react-hot-toast"
+import { useState } from "react"
 
 interface EditCategoryDialogProps {
     children: React.ReactNode
@@ -25,6 +29,10 @@ export function CreateCategoryDialog({
 }: EditCategoryDialogProps) {
 
 
+    const [open, setOpen] = useState(false);
+    const { mutateAsync: createCategory, isPending } = useCreateCategoryMutation()
+
+
 
     const createCategoryFormSchema = z.object({
         name: z
@@ -33,10 +41,9 @@ export function CreateCategoryDialog({
             .max(32, "Category name must be at most 32 characters."),
         description: z
             .string()
-            .min(20, "Description must be at least 20 characters.")
             .max(100, "Description must be at most 100 characters."),
-        isActive: z.boolean(),
-        image: z.file().min(1, "Image is required"),
+        isActive: z.boolean().optional(),
+        image: z.file().optional(),
     })
 
     const form = useForm<z.infer<typeof createCategoryFormSchema>>({
@@ -45,12 +52,36 @@ export function CreateCategoryDialog({
     })
 
 
-    function onSubmit(data: z.infer<typeof createCategoryFormSchema>) {
+    async function onSubmit(data: z.infer<typeof createCategoryFormSchema>) {
         // Do something with the form values.
         console.log(data)
+
+
+        try {
+
+            const formData = new FormData()
+
+            if (data.image) {
+                formData.append("image", data.image)
+            }
+            formData.append("name", data.name)
+            formData.append("description", data.description)
+            formData.append("isActive", "true")
+
+            // console.table([...formData.entries()])
+
+            await createCategory(formData)
+
+            toast.success("Category created successfully")
+            form.reset()
+            setOpen(false) // Close dialog
+        } catch (error: any) {
+            console.log(error)
+            toast.error("Failed to create category")
+        }
     }
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
@@ -62,7 +93,7 @@ export function CreateCategoryDialog({
                 <form onSubmit={form.handleSubmit(onSubmit)}>
 
                     <FieldGroup className=" gap-2">
-                        
+
 
                         <Controller
                             name='name'
@@ -104,35 +135,42 @@ export function CreateCategoryDialog({
                                 </Field>
                             )}
                         />
-                       
-                            <Controller
-                                name="image"
-                                control={form.control}
-                                render={({ field, fieldState }) => (
-                                    <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="form-rhf-demo-title">
-                                            Poster
-                                        </FieldLabel>
-                                        <Input
-                                            {...field}
-                                            type="file"
-                                            onChange={(e) => field.onChange(e.target.files?.[0])}
-                                        />
-                                        {fieldState.invalid && (
-                                            <FieldError errors={[fieldState.error]} />
-                                        )}
-                                    </Field>
-                                )}
-                            />
-                        
+
+                        <Controller
+                            name="image"
+                            control={form.control}
+                            render={({ field: { onChange, name, ref }, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="form-rhf-demo-title">
+                                        Poster
+                                    </FieldLabel>
+                                    <Input
+                                        type="file"
+                                        name={name}
+                                        ref={ref}
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            onChange(e.target.files?.[0])
+                                        }}
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
+
 
                     </FieldGroup>
-                    
+
                     <DialogFooter className="flex justify-end mt-10">
-                        <Button type="button" variant="outline">
-                            Cancel
-                        </Button>
-                        <Button type="submit" className="cursor-pointer">Save Changes</Button>
+                        <DialogClose asChild>
+
+                            <Button type="button" variant="outline">
+                                Cancel
+                            </Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={isPending} className="cursor-pointer">Create</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

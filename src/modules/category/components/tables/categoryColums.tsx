@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { TaskEdit02Icon, Delete02Icon } from "@hugeicons/core-free-icons"
+import { TaskEdit02Icon, Delete02Icon, Loader } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Category } from "../../api/categoryManagement/categoryManagement.types"
 import { EditCategoryDialog } from "../dialogs/EditCategoryDialog"
+import { Badge } from "@/components/ui/badge"
+import { useDeleteCategoryMutation } from "../../api/categoryManagement/categoryManagement.endpoint"
+import toast from "react-hot-toast"
 
 
 export const categoryColumns: ColumnDef<Category>[] = [
@@ -44,14 +47,23 @@ export const categoryColumns: ColumnDef<Category>[] = [
     accessorKey: "isActive",
     header: "Status",
     cell: ({ row }) => {
-      return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${row.original.isActive
-          ? "bg-green-100 text-green-800"
-          : "bg-red-100 text-red-800"
-          }`}>
-          {row.original.isActive ? "Active" : "Inactive"}
-        </span>
-      )
+
+
+      if (!row.original.isActive) {
+        return (
+          <Badge variant="destructive">
+
+            Inactive
+          </Badge>
+        )
+      } else {
+        return (
+          <Badge className="bg-green-100 text-green-800">
+            Active
+          </Badge>
+        )
+      }
+
     },
   },
   {
@@ -65,27 +77,35 @@ export const categoryColumns: ColumnDef<Category>[] = [
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const [isEditOpen, setIsEditOpen] = useState(false)
+      const categoryId = row.original.id
+      const { mutateAsync, isPending } = useDeleteCategoryMutation()
+
 
       return (
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => setIsEditOpen(true)}>
-            <HugeiconsIcon icon={TaskEdit02Icon} />
-          </Button>
 
-          <EditCategoryDialog
-            category={row.original}
-            open={isEditOpen}
-            onOpenChange={setIsEditOpen}
-            onSave={(updatedCategory) => {
-              console.log("Save category:", updatedCategory)
-              setIsEditOpen(false)
-            }}
-          />
+          <EditCategoryDialog categoryId={categoryId}>
+            <Button size="sm" variant="outline">
+              <HugeiconsIcon icon={TaskEdit02Icon} />
+            </Button>
+          </EditCategoryDialog>
 
-          <Button size="sm" variant="outline">
-            <HugeiconsIcon icon={Delete02Icon} />
-          </Button>
+
+
+          {
+            isPending ? (
+              <Button size="sm" variant="outline" disabled>
+                <HugeiconsIcon icon={Loader} className="animate-spin" />
+              </Button>
+            ) : (
+              <Button size="sm" variant="destructive" onClick={async () => {
+                await mutateAsync(categoryId)
+                toast.success("Category deleted successfully")
+              }} disabled={isPending}>
+                <HugeiconsIcon icon={Delete02Icon} />
+              </Button>
+            )
+          }
         </div >
       )
     },
