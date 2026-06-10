@@ -15,7 +15,7 @@ const editCategory = async (payload: FormData): Promise<{
   success: boolean,
   errors: null
 }> => {
-  const response = await apiClient.post("/category/create", payload, {
+  const response = await apiClient.put("/category", payload, {
     headers: {
       "Content-Type": "multipart/form-data"
     }

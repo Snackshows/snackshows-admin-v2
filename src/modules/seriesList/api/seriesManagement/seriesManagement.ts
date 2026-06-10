@@ -1,12 +1,12 @@
 export interface CreateSeriesData {
-   categories: { 
-                id: string;
-                name: string;
-            }[];
-   languages: { 
-                id: string;
-                name: string;
-            }[];
+    categories: {
+        id: string;
+        name: string;
+    }[];
+    languagesData: {
+        id: string;
+        name: string;
+    }[];
 }
 
 export interface GetCreateSeriesDataResponse {

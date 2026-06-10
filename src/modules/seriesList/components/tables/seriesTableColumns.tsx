@@ -6,6 +6,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import type { Series } from "../../api/seriesManagement/seriesManagement.types"
 import { useNavigate } from "react-router"
 import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 export const seriesTableColumns: ColumnDef<Series>[] = [
   {
@@ -27,18 +28,29 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
       )
     },
   },
+  // {
+  //   accessorKey: "banner",
+  //   header: "Banner",
+  //   cell: ({ row }) => {
+  //     const banner = row.original.banner as string
+  //     return (
+  //       <img
+  //         src={banner}
+  //         alt="banner"
+  //         className="aspect-video w-12 rounded-md object-cover"
+  //         />
+  //       )
+  //     },
+  //   },
+
   {
-    accessorKey: "banner",
-    header: "Banner",
+    accessorKey: "category",
+    header: "Category",
     cell: ({ row }) => {
-      const banner = row.original.banner as string
-      return (
-        <img
-          src={banner}
-          alt="banner"
-          className="aspect-video w-12 rounded-md object-cover"
-        />
-      )
+      const categories = row.getValue("category") as { name: string }[]
+      return <div>
+        <Badge>{categories?.[0]?.name || "NA"}</Badge>
+      </div>
     },
   },
 
@@ -49,26 +61,26 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
       const name = row.original.name
       const description = row.original.description
       return (
-        <div className="w-full max-w-48  truncate text-left flex flex-col">
-          <div className="text-md font-semibold">{name}</div>
-          <div className="w-full ">{description}</div>
-        </div>
+        <section className="w-full flex items-center justify-between border">
+          <div className="w-full max-w-48 border  truncate text-left flex flex-col">
+            <div className="text-md font-semibold">{name}</div>
+            <div className="w-full "><span>{description}</span>  </div>
+          </div>
+          <Tooltip>
+            <TooltipTrigger>
+              <span>...</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              {description}
+            </TooltipContent>
+          </Tooltip>
+        </section>
+
       )
     },
   },
 
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => {
-      const categories = row.getValue("category") as { name: string }[]
-      return <div>
-        <Badge>{categories?.[0]?.name || "-"}</Badge>
-      </div>
-    },
-  },
- 
- 
+
   {
     accessorKey: "totalEpisodes",
     header: "Total Episodes",

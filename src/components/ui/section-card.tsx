@@ -24,7 +24,7 @@ const SectionHeader = React.forwardRef<
 	<div
 		ref={ref}
 		className={cn(
-			'bg-primary flex flex-col space-y-1.5 p-3 text-left font-semibold text-white uppercase',
+			'bg-primary flex flex-col space-y-1.5 rounded-t-xl p-3 text-left font-semibold text-white uppercase',
 			className
 		)}
 		{...props}

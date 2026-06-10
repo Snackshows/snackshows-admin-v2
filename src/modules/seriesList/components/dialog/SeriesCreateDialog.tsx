@@ -1,49 +1,45 @@
+
 import { useEffect, useState } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import z from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import * as z from "zod"
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 import { useGetCreateSeriesDataQuery } from "../../api/seriesManagement/seriesManagement.endpoint"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface SeriesCreateDialogProps {
   children: React.ReactNode
-
+  onSave?: (data: FormData) => void
 }
+export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
 
-export function SeriesCreateDialog({
-  children
-}: SeriesCreateDialogProps) {
-  const { data: createSeriesData } = useGetCreateSeriesDataQuery()
-
-
+  const [open, setOpen] = useState(false);
+  const { data: createSeriesData, refetch } = useGetCreateSeriesDataQuery()
 
   const seriesCreateFormSchema = z.object({
-    seriesName: z
-      .string()
-      .min(5, "Series name must be at least 5 characters.")
-      .max(32, "Series name must be at most 32 characters."),
-    description: z
-      .string()
-      .min(20, "Description must be at least 20 characters.")
-      .max(100, "Description must be at most 100 characters."),
-    category: z.string().min(1, "Category is required"),
+    name: z.string().min(1, "Name is required"),
+    description: z.string().min(1, "Description is required"),
+    banner: z
+      .custom<FileList>()
+      .refine((files) => files && files.length === 1, 'File is required')
+      .optional(),
+    thumbnail: z
+      .custom<FileList>()
+      .refine((files) => files && files.length === 1, 'File is required')
+      .optional(),
+    type: z.string().optional(),
     language: z.string().min(1, "Language is required"),
-    poster: z.file().min(1, "Poster is required"),
-    banner: z.file().min(1, "Banner is required"),
+    category: z.string().min(1, "At least one category is required"),
+    maxAdsForFreeView: z.string().optional(),
+    releaseDate: z.string().min(1, "Release date is required"),
+    isTrending: z.boolean().optional(),
+    isAutoAnimateBanner: z.boolean().optional(),
+    isActive: z.boolean().optional(),
   })
 
 
@@ -54,15 +50,26 @@ export function SeriesCreateDialog({
   })
 
 
+  useEffect(() => {
+    refetch()
+  }, [])
+
+
   function onSubmit(data: z.infer<typeof seriesCreateFormSchema>) {
     // Do something with the form values.
     console.log(data)
+
+    try {
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add Series</DialogTitle>
           <DialogDescription>
@@ -88,7 +95,8 @@ export function SeriesCreateDialog({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {createSeriesData?.data.categories?.map((category) => (
+
+                        {createSeriesData?.data?.categories?.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -118,14 +126,12 @@ export function SeriesCreateDialog({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {createSeriesData?.data.languages?.map((language) => (
+                        {createSeriesData?.data?.languagesData?.map((language) => (
                           <SelectItem key={language.id} value={language.id}>
                             {language.name}
                           </SelectItem>
                         ))}
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
+
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -137,7 +143,7 @@ export function SeriesCreateDialog({
             />
 
             <Controller
-              name='seriesName'
+              name="name"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
@@ -176,19 +182,98 @@ export function SeriesCreateDialog({
                 </Field>
               )}
             />
-            <section className="grid grid-cols-2 gap-4">
+            <section className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+
               <Controller
-                name="poster"
+                name="isTrending"
                 control={form.control}
                 render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} >
+                    <div className="w-full flex items-center gap-2 justify-start ">
+                      <FieldLabel htmlFor="form-rhf-demo-title">
+                        Is Trending
+                      </FieldLabel>
+
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+
+                        aria-invalid={fieldState.invalid}
+
+
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="isAutoAnimateBanner"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <div className="w-full flex items-center gap-2 justify-start ">
+
+                      <FieldLabel htmlFor="form-rhf-demo-title">
+                        Is Auto Animate Banner
+                      </FieldLabel>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+
+                        aria-invalid={fieldState.invalid}
+
+
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="isActive"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <div className="w-full flex items-center gap-2 justify-start ">
+
+                      <FieldLabel htmlFor="form-rhf-demo-title">
+                        Is Active
+                      </FieldLabel>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </section>
+            <section className="grid grid-cols-2 gap-4 mt-4">
+              <Controller
+                name="thumbnail"
+                control={form.control}
+                render={({ field: { onChange, name, ref }, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="form-rhf-demo-title">
                       Poster
                     </FieldLabel>
                     <Input
-                      {...field}
                       type="file"
-                      onChange={(e) => field.onChange(e.target.files?.[0])}
+                      name={name}
+                      ref={ref}
+                      accept="image/*"
+                      onChange={(e) => {
+                        onChange(e.target.files?.[0])
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -199,15 +284,19 @@ export function SeriesCreateDialog({
               <Controller
                 name="banner"
                 control={form.control}
-                render={({ field, fieldState }) => (
+                render={({ field: { onChange, name, ref }, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="form-rhf-demo-title">
                       Banner
                     </FieldLabel>
                     <Input
-                      {...field}
                       type="file"
-                      onChange={(e) => field.onChange(e.target.files?.[0])}
+                      name={name}
+                      ref={ref}
+                      accept="image/*"
+                      onChange={(e) => {
+                        onChange(e.target.files?.[0])
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -219,9 +308,11 @@ export function SeriesCreateDialog({
 
           </FieldGroup>
           <DialogFooter className="flex justify-end mt-10">
-            <Button type="button" variant="outline" >
-              Cancel
-            </Button>
+            <DialogClose>
+              <Button type="button" variant="outline" >
+                Cancel
+              </Button>
+            </DialogClose>
             <Button type="submit" className="cursor-pointer">Save Changes</Button>
           </DialogFooter>
         </form>
