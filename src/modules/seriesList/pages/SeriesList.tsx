@@ -28,7 +28,6 @@ const SeriesListPage = () => {
                   Add Series
                 </Button>
               </SeriesCreateDialog>
-              
             }
           />
         </SectionContent>

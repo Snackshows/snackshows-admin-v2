@@ -98,14 +98,18 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
   {
     id: "addEpisode",
     header: "Add Episode",
-    cell: () => {
-      return (
-         <AddNewEpisodeDialog>
+    cell: ({ row }) => {
 
-        <Button variant="ghost" size="icon">
-          <HugeiconsIcon icon={Add01Icon} />
-        </Button>
-         </AddNewEpisodeDialog>
+      const seriesId = row.original.id
+      const totalEpisodes = row.original.totalEpisodes
+      
+      return (
+        <AddNewEpisodeDialog seriesId={seriesId} lastEpisodeNumber={Number(totalEpisodes)}>
+
+          <Button variant="ghost" size="icon">
+            <HugeiconsIcon icon={Add01Icon} />
+          </Button>
+        </AddNewEpisodeDialog>
       )
     },
   },

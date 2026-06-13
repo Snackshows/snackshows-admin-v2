@@ -37,11 +37,8 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
     isActive: z.boolean().optional(),
   })
 
-
-
   const form = useForm<z.infer<typeof seriesCreateFormSchema>>({
     resolver: zodResolver(seriesCreateFormSchema),
-
   })
 
   const { formState: { errors } } = form
@@ -50,7 +47,6 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
   useEffect(() => {
     refetch()
   }, [])
-
 
   async function onSubmit(data: z.infer<typeof seriesCreateFormSchema>) {
     // Do something with the form values.
