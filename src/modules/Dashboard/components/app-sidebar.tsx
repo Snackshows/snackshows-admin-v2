@@ -13,7 +13,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon } from "@hugeicons/core-free-icons"
+import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon, VoiceIcon } from "@hugeicons/core-free-icons"
 import { Link, useLocation } from "react-router"
 
 // This is sample data.
@@ -73,6 +73,17 @@ const data = {
       ],
     },
     {
+      title: "Language Management",
+      url: "#",
+      items: [
+        {
+          title: "Series Language",
+          url: "/languageList",
+          icon: VoiceIcon,
+        },
+      ],
+    },
+    {
       title: "Staff Management",
       url: "#",
       items: [
@@ -89,12 +100,12 @@ const data = {
       items: [
         {
           title: "Subscription Plan",
-          url: "/payments",
+          url: "/subscriptions",
           icon: Money03Icon
         },
         {
           title: "Order List",
-          url: "/order-list",
+          url: "/orders-list",
           icon: Clock02Icon
         },
 

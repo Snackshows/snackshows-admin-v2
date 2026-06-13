@@ -19,6 +19,8 @@ import StaffManagementPage from './modules/staff/pages/StaffManagement'
 import SettingsLayout from './modules/settings/components/SettingsLayout'
 import Settings from './modules/settings/pages/Settings'
 import SettingsProfile from './modules/settings/pages/SettingsProfile'
+import LanguageList from './modules/languages/Pages/LanguageList'
+import SubscriptionsPage from './modules/Subscription/pages/Subscriptions'
 
 
 function App() {
@@ -37,11 +39,14 @@ function App() {
           {/* Users */}
           <Route path="/users" element={<UsersManagementPage />} />
           <Route path="/users/:userId" element={<UserDetailsPage />} />
-          {/* Series */}
+          {/* Category */}
           <Route path="/seriesCategory" element={<CategoryPage />} />
+          {/* Series */}
+
           <Route path="/series" element={<SeriesListPage />} />
           <Route path="/series/create" element={<SeriesListPage />} />
           <Route path="/series/:seriesId" element={<SeriesDetailsPage />} />
+
           {/* Episode */}
           <Route path="/episodeList" element={<EpisodeListPage />} />
           <Route path="/episodeList/:episodeId" element={<EpisodeDetailsPage />} />
@@ -50,9 +55,14 @@ function App() {
           {/* Staff */}
           <Route path="/staff" element={<StaffManagementPage />} />
           {/* Languages */}
-          <Route path="/languages" element={<StaffManagementPage />} />
-          {/* Payments */}
-          <Route path="/payments" element={<PaymentPage />} />
+          <Route path="/languageList" element={<LanguageList />} />
+          
+          {/* Subscription Management */}
+          <Route path="/subscriptions" element={<SubscriptionsPage />} />
+          <Route path="/orders-list" element={<PaymentPage />} />
+
+          
+
           {/* Settings */}
           <Route path="/settings" element={<SettingsLayout />}>
             <Route index element={<Settings/>} />

@@ -7,6 +7,7 @@ import type { Series } from "../../api/seriesManagement/seriesManagement.types"
 import { useNavigate } from "react-router"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { AddNewEpisodeDialog } from "../dialog/AddNewEpisodeDialog"
 
 export const seriesTableColumns: ColumnDef<Series>[] = [
   {
@@ -28,21 +29,6 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
       )
     },
   },
-  // {
-  //   accessorKey: "banner",
-  //   header: "Banner",
-  //   cell: ({ row }) => {
-  //     const banner = row.original.banner as string
-  //     return (
-  //       <img
-  //         src={banner}
-  //         alt="banner"
-  //         className="aspect-video w-12 rounded-md object-cover"
-  //         />
-  //       )
-  //     },
-  //   },
-
   {
     accessorKey: "category",
     header: "Category",
@@ -61,8 +47,8 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
       const name = row.original.name
       const description = row.original.description
       return (
-        <section className="w-full flex items-center justify-between border">
-          <div className="w-full max-w-48 border  truncate text-left flex flex-col">
+        <section className="w-full flex items-center justify-between ">
+          <div className="w-full max-w-48 truncate text-left flex flex-col">
             <div className="text-md font-semibold">{name}</div>
             <div className="w-full "><span>{description}</span>  </div>
           </div>
@@ -90,7 +76,7 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     header: "Banner",
     cell: ({ row }) => {
       const isBanner = row.getValue("isAutoAnimateBanner") as boolean
-      return <Switch checked={isBanner} />
+      return isBanner ? <Badge variant="default">Yes</Badge> : <Badge variant="destructive">No</Badge>
     },
   },
   {
@@ -98,7 +84,7 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     header: "Trending",
     cell: ({ row }) => {
       const isTrending = row.getValue("isTrending") as boolean
-      return <Switch checked={isTrending} />
+      return isTrending ? <Badge variant="default">Yes</Badge> : <Badge variant="destructive">No</Badge>
     },
   },
   {
@@ -106,7 +92,7 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     header: "Active",
     cell: ({ row }) => {
       const isActive = row.getValue("isActive") as boolean
-      return <Switch checked={isActive} />
+      return isActive ? <Badge variant="default">Yes</Badge> : <Badge variant="destructive">No</Badge>
     },
   },
   {
@@ -114,9 +100,12 @@ export const seriesTableColumns: ColumnDef<Series>[] = [
     header: "Add Episode",
     cell: () => {
       return (
+         <AddNewEpisodeDialog>
+
         <Button variant="ghost" size="icon">
           <HugeiconsIcon icon={Add01Icon} />
         </Button>
+         </AddNewEpisodeDialog>
       )
     },
   },

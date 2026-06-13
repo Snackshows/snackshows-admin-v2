@@ -1,26 +1,22 @@
-
-
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { TaskEdit02Icon, Delete02Icon, Loader } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
-import type { Category } from "../../api/categoryManagement/categoryManagement.types"
-import { EditCategoryDialog } from "../dialogs/EditCategoryDialog"
+import type { Subscription } from "../../api/subscriptionManagement/subscriptionManagement.types"
 import { Badge } from "@/components/ui/badge"
-import { useDeleteCategoryMutation } from "../../api/categoryManagement/categoryManagement.endpoint"
+import { useDeleteSubscriptionMutation } from "../../api/subscriptionManagement/subscriptionManagement.endpoint"
 import toast from "react-hot-toast"
 
 
-export const categoryColumns: ColumnDef<Category>[] = [
+export const subscriptionColumns: ColumnDef<Subscription>[] = [
   {
     accessorKey: "serial",
     header: "#",
     cell: ({ row }) => row.index + 1,
   },
   {
-    accessorKey: "uniqueId",
-    header: "Unique ID",
+    accessorKey: "code",
+    header: "Code",
   },
   {
     accessorKey: "name",
@@ -31,17 +27,40 @@ export const categoryColumns: ColumnDef<Category>[] = [
     header: "Description",
   },
   {
-    accessorKey: "image",
-    header: "Image",
+    accessorKey: "amount",
+    header: "Amount",
     cell: ({ row }) => {
-      const image = row.original.image
-      const name = row.original.name 
+      return `$${row.original.amount}`
+    },
+  },
+  {
+    accessorKey: "intervalPeriod",
+    header: "Interval Period",
+  },
+  {
+    accessorKey: "duration",
+    header: "Duration",
+  },
+  {
+    accessorKey: "isFree",
+    header: "Free Plan",
+    cell: ({ row }) => {
+      return row.original.isFree ? "Yes" : "No"
+    },
+  },
+  {
+    accessorKey: "features",
+    header: "Features",
+    cell: ({ row }) => {
+      const features = row.original.features
       return (
-        <img
-          src={image}
-          alt={name}
-          className="w-12 h-12 object-cover rounded"
-        />
+        <div className="flex flex-wrap gap-1">
+          {features?.map((feature, index) => (
+            <Badge key={feature.planFeatureId || index} variant="secondary" className="text-xs">
+              {feature.label}
+            </Badge>
+          ))}
+        </div>
       )
     },
   },
@@ -49,12 +68,9 @@ export const categoryColumns: ColumnDef<Category>[] = [
     accessorKey: "isActive",
     header: "Status",
     cell: ({ row }) => {
-
-
       if (!row.original.isActive) {
         return (
           <Badge variant="destructive">
-
             Inactive
           </Badge>
         )
@@ -65,7 +81,6 @@ export const categoryColumns: ColumnDef<Category>[] = [
           </Badge>
         )
       }
-
     },
   },
   {
@@ -79,20 +94,14 @@ export const categoryColumns: ColumnDef<Category>[] = [
     accessorKey: "actions",
     header: "Actions",
     cell: ({ row }) => {
-      const categoryId = row.original.id
-      const { mutateAsync, isPending } = useDeleteCategoryMutation()
-
+      const subscriptionId = row.original.planId
+      const { mutateAsync, isPending } = useDeleteSubscriptionMutation()
 
       return (
         <div className="flex gap-2">
-
-          <EditCategoryDialog categoryId={categoryId}>
-            <Button size="sm" variant="outline">
-              <HugeiconsIcon icon={TaskEdit02Icon} />
-            </Button>
-          </EditCategoryDialog>
-
-
+          <Button size="sm" variant="outline">
+            <HugeiconsIcon icon={TaskEdit02Icon} />
+          </Button>
 
           {
             isPending ? (
@@ -101,8 +110,8 @@ export const categoryColumns: ColumnDef<Category>[] = [
               </Button>
             ) : (
               <Button size="sm" variant="destructive" onClick={async () => {
-                await mutateAsync(categoryId)
-                toast.success("Category deleted successfully")
+                await mutateAsync(subscriptionId)
+                toast.success("Subscription deleted successfully")
               }} disabled={isPending}>
                 <HugeiconsIcon icon={Delete02Icon} />
               </Button>

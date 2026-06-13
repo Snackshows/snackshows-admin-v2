@@ -9,8 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useGetCreateSeriesDataQuery } from "../../api/seriesManagement/seriesManagement.endpoint"
+import { useGetCreateSeriesDataQuery, useGetCreateSeriesDataSubmitMutation } from "../../api/seriesManagement/seriesManagement.endpoint"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import toast from "react-hot-toast"
 
 interface SeriesCreateDialogProps {
   children: React.ReactNode
@@ -20,22 +21,16 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
 
   const [open, setOpen] = useState(false);
   const { data: createSeriesData, refetch } = useGetCreateSeriesDataQuery()
+  const { mutateAsync: createSeriesDataSubmit, isPending: isCreatingSeries } = useGetCreateSeriesDataSubmitMutation()
 
   const seriesCreateFormSchema = z.object({
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
-    banner: z
-      .custom<FileList>()
-      .refine((files) => files && files.length === 1, 'File is required')
-      .optional(),
-    thumbnail: z
-      .custom<FileList>()
-      .refine((files) => files && files.length === 1, 'File is required')
-      .optional(),
-    type: z.string().optional(),
+    banner: z.file(),
+    thumbnail: z.file(),
+
     language: z.string().min(1, "Language is required"),
     category: z.string().min(1, "At least one category is required"),
-    maxAdsForFreeView: z.string().optional(),
     releaseDate: z.string().min(1, "Release date is required"),
     isTrending: z.boolean().optional(),
     isAutoAnimateBanner: z.boolean().optional(),
@@ -49,19 +44,48 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
 
   })
 
+  const { formState: { errors } } = form
 
+  console.log(errors)
   useEffect(() => {
     refetch()
   }, [])
 
 
-  function onSubmit(data: z.infer<typeof seriesCreateFormSchema>) {
+  async function onSubmit(data: z.infer<typeof seriesCreateFormSchema>) {
     // Do something with the form values.
     console.log(data)
 
     try {
 
+
+
+      const formData = new FormData();
+
+      if (data.banner) {
+        formData.append('banner', data.banner);
+      }
+      if (data.thumbnail) {
+        formData.append('thumbnail', data.thumbnail);
+      }
+      formData.append('name', data.name);
+      formData.append('description', data.description);
+      formData.append('languageId', data.language);
+      formData.append('categoryIds[]', data.category);
+      formData.append('releaseDate', data.releaseDate);
+      formData.append('isTrending', data.isTrending ? 'true' : 'false');
+      formData.append('isAutoAnimateBanner', data.isAutoAnimateBanner ? 'true' : 'false');
+      formData.append('isActive', data.isActive ? 'true' : 'false');
+
+      //  console.table([...formData.entries()])
+
+
+
+      await createSeriesDataSubmit(formData)
+      toast.success("Series created successfully")
+      setOpen(false)
     } catch (error) {
+      toast.error("Failed to create series")
       console.log(error)
     }
   }
@@ -127,7 +151,7 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
                     <SelectContent>
                       <SelectGroup>
                         {createSeriesData?.data?.languagesData?.map((language) => (
-                          <SelectItem key={language.id} value={language.id}>
+                          <SelectItem key={language.id} value={String(language.id)}>
                             {language.name}
                           </SelectItem>
                         ))}
@@ -256,6 +280,29 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
                   </Field>
                 )}
               />
+              <Controller
+                name="releaseDate"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <div >
+
+                      <FieldLabel htmlFor="form-rhf-demo-title">
+                        Release Date
+                      </FieldLabel>
+                      <Input
+                        type="date"
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        aria-invalid={fieldState.invalid}
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
             </section>
             <section className="grid grid-cols-2 gap-4 mt-4">
               <Controller
@@ -264,7 +311,7 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
                 render={({ field: { onChange, name, ref }, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor="form-rhf-demo-title">
-                      Poster
+                      Thumbnail
                     </FieldLabel>
                     <Input
                       type="file"
@@ -313,7 +360,7 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" className="cursor-pointer">Save Changes</Button>
+            <Button type="submit" disabled={isCreatingSeries} className="cursor-pointer">Create Series</Button>
           </DialogFooter>
         </form>
       </DialogContent>
