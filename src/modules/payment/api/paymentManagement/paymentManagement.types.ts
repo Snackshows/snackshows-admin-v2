@@ -1,20 +1,21 @@
-export interface Payment {
-  id: string;
-  transactionId: string;
+
+export interface PaymentOrder{
   userId: string;
   userName: string;
-  amount: number;
+  avatar: string;
+  planName: string;
+  uniqueId: string;
+  paymentGateway: string;
   currency: string;
-  status: "pending" | "completed" | "failed" | "refunded";
-  paymentMethod: string;
-  description: string;
+  amount: number;
+  status: 'INITIATED' | 'PENDING' | 'SUCCESS' | 'FAILED' | 'REFUNDED';
   createdAt: string;
-  updatedAt: string;
+  date: string;
 }
 
 export interface GetAllPaymentsResponse {
   statusCode: number;
   message: string;
   success: boolean;
-  data: Payment[];
+  data: PaymentOrder[];
 }

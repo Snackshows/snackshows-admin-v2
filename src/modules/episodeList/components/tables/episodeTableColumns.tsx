@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { TaskEdit02Icon, Delete01Icon } from "@hugeicons/core-free-icons"
+
+import { TaskEdit02Icon, CircleLock02Icon, CircleUnlock02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Episode } from "../../api/episodeManagement/episodeManagement.types"
-import { Link, useNavigate } from "react-router"
+import { Link } from "react-router"
 
 const ActionCell = ({ episode }: { episode: Episode }) => {
-  const navigate = useNavigate()
   return (
     <div className="flex gap-2 justify-center">
       <Link to={`/episodeList/${episode.id}`}>
@@ -33,12 +32,15 @@ export const episodeTableColumns: ColumnDef<Episode>[] = [
     header: "Thumbnail",
     cell: ({ row }) => {
       const thumbnail = row.getValue("thumbnail") as string
-      return (
+      return (<section className="w-full flex items-center justify-center">
+
+
         <img
           src={thumbnail}
           alt="thumbnail"
-          className="h-12 w-12 rounded-md object-cover"
+          className="h-24 w-12 rounded-md object-cover border border-gray-200"
         />
+      </section>
       )
     },
   },
@@ -47,14 +49,23 @@ export const episodeTableColumns: ColumnDef<Episode>[] = [
     header: "Video",
     cell: ({ row }) => {
       const videoUrl = row.getValue("videoUrl") as string
-      return (
+      const thumbnail = row.getValue("thumbnail") as string
+      return (<section className="w-full flex items-center justify-center">
+
+
         <Link
           to={videoUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
-          View Video
+          <img
+            src={thumbnail}
+            alt="thumbnail"
+            className="h-24 w-12 rounded-md object-cover border border-gray-200"
+          />
+
         </Link>
+      </section>
       )
     },
   },
@@ -69,17 +80,31 @@ export const episodeTableColumns: ColumnDef<Episode>[] = [
   {
     accessorKey: "episodeNumber",
     header: "Episode Number",
+    cell: ({ row }) => {
+      const episodeNumber = row.getValue("episodeNumber") as number
+      return episodeNumber || "-"
+    },
   },
   {
     accessorKey: "duration",
     header: "Duration (seconds)",
+    cell: ({ row }) => {
+      const duration = row.getValue("duration") as number
+      return duration || "-"
+    },
   },
   {
     accessorKey: "isLocked",
     header: "Lock Status",
     cell: ({ row }) => {
       const isLocked = row.getValue("isLocked") as boolean
-      return <Switch checked={isLocked} />
+      return <section className="w-full flex items-center justify-center">
+        {isLocked ? (
+          <HugeiconsIcon icon={CircleLock02Icon} className="text-red-500" />
+        ) : (
+          <HugeiconsIcon icon={CircleUnlock02Icon} className="text-green-500" />
+        )}
+      </section>
     },
   },
   {
@@ -95,7 +120,11 @@ export const episodeTableColumns: ColumnDef<Episode>[] = [
     header: "Action",
     cell: ({ row }) => {
       const episode = row.original
-      return <ActionCell episode={episode} />
+      return (
+        <section className="w-full flex items-center justify-center">
+          <ActionCell episode={episode} />
+        </section>
+      )
     },
   },
 ]

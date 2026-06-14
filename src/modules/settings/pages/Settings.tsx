@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const Settings = () => {
-    const [activeTab, setActiveTab] = useState('Setting')
+    const [activeTab] = useState('Setting')
     const [formData, setFormData] = useState({
         privacyPolicyLink: '',
         termsAndCondition: '',
@@ -34,10 +34,8 @@ const Settings = () => {
     }
 
     return (
-        <div className="p-6">
-            {/* Header */}
-            
-
+         <section className='w-full p-4 border'>
+           
             
 
             {/* Main Content */}
@@ -167,7 +165,7 @@ const Settings = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </section>
     )
 }
 

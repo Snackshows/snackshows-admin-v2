@@ -32,7 +32,7 @@ const SeriesDetailsPage = () => {
   })
   const { watch } = form
 
-  const thumbnailUrl = watch("thumbnail")
+  // const thumbnailUrl = watch("thumbnail")
   const bannerUrl = watch("banner")
 
   // TODO: Fetch series data using id

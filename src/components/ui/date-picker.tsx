@@ -29,13 +29,14 @@ export function DatePicker({
 	onChange,
 	placeholder = 'Pick a date',
 	disabled = false,
-	// disabledPreviousDate=false,
+	disabledPreviousDate=false,
 	// disabledDate,
 	className,
 }: DatePickerProps) {
 	// const specialDate = disabledDate ? new Date("disabledDate`) : undefined;
 	// specialDate?.setHours(0, 0, 0, 0);
 	const currentDate = value ? new Date(value) : undefined;
+
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
@@ -92,16 +93,14 @@ export function DatePicker({
 					captionLayout="dropdown"
 
 					///stop picking the previous dates
-					// disabled={
-					// disabled
-					// ? disabled
-					// : [
-					// 	{
-					// 		before: new Date(),
-					// 	},
-					// 	//  specialDate,
-					// ]
-					// }
+					disabled={
+					disabledPreviousDate && [
+						{
+							before: new Date(),
+						},
+						//  specialDate,
+					]
+					}
 				/>
 			</PopoverContent>
 		</Popover>

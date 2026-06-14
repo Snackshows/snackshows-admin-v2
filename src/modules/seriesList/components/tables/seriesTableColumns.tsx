@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { Add01Icon, Edit01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"

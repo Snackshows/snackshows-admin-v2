@@ -2,19 +2,39 @@ import { Button } from "@/components/ui/button";
 import { TaskEdit02Icon, Delete01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ColumnDef } from "@tanstack/react-table";
+import type { PaymentOrder } from "../../api/paymentManagement/paymentManagement.types";
+import { Badge } from "@/components/ui/badge";
 
-export const paymentColumns: ColumnDef<any>[] = [
+export const paymentColumns: ColumnDef<PaymentOrder>[] = [
+
   {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "transactionId",
-    header: "Transaction ID",
+    id: "no",
+    header: "No",
+    cell: ({ row }) => row.index + 1,
   },
   {
     accessorKey: "userName",
     header: "User Name",
+    cell: ({ row }) => {
+      const userName = row.original.userName;
+      const avatar = row.original.avatar;
+      return (
+        <div className="flex items-center gap-2">
+          {avatar ? (
+            <img src={avatar} alt={userName} className="w-8 h-8 rounded-full" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
+              {userName?.charAt(0)?.toUpperCase() || "U"}
+            </div>
+          )}
+          <span>{userName}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "uniqueId",
+    header: "Transaction ID",
   },
   {
     accessorKey: "amount",
@@ -22,34 +42,64 @@ export const paymentColumns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       const amount = row.original.amount;
       const currency = row.original.currency;
-      return `${currency} ${amount.toFixed(2)}`;
+      return <div><b>{currency}</b> {amount.toFixed(2)}</div>;
     },
   },
   {
-    accessorKey: "paymentMethod",
-    header: "Payment Method",
+    accessorKey: "paymentGateway",
+    header: "Payment Gateway",
+    cell: ({ row }) => {
+      const paymentGateway = row.original.paymentGateway;
+      return <div>{paymentGateway}</div>;
+    },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status;
-      const statusColors: Record<string, string> = {
-        completed: "bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium",
-        pending: "bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium",
-        failed: "bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium",
-        refunded: "bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium",
-      };
-      return (
-        <span className={statusColors[status] || "bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium"}>
-          {status}
-        </span>
-      );
+
+
+      switch (status) {
+        case "INITIATED": {
+          return <Badge className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+        case "PENDING": {
+          return <Badge className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+        case "SUCCESS": {
+          return <Badge className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+        case "FAILED": {
+          return <Badge className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+        case "REFUNDED": {
+          return <Badge className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+        default: {
+          return <Badge className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+            {status}
+          </Badge>
+        }
+
+      }
+
+
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "planName",
+    header: "Plan",
   },
   {
     accessorKey: "createdAt",
@@ -65,20 +115,5 @@ export const paymentColumns: ColumnDef<any>[] = [
       });
     },
   },
-  {
-    accessorKey: "actions",
-    header: "Actions",
-    cell: () => {
-      return (
-        <div className="flex gap-2 justify-center">
-          <Button size="sm" variant="outline">
-            <HugeiconsIcon icon={TaskEdit02Icon} />
-          </Button>
-          <Button size="sm" variant="outline">
-            <HugeiconsIcon icon={Delete01Icon} />
-          </Button>
-        </div>
-      );
-    },
-  },
+  
 ];

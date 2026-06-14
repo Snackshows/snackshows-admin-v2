@@ -64,8 +64,13 @@ function App() {
           
 
           {/* Settings */}
-          <Route path="/settings" element={<SettingsLayout />}>
+          <Route path="/settings"  element={<SettingsLayout />}>
             <Route index element={<Settings/>} />
+            <Route path="ads-setting" element={<SettingsProfile />} />
+            <Route path="storage" element={<SettingsProfile />} />
+            <Route path="payment" element={<SettingsProfile />} />
+            <Route path="report-reasons" element={<SettingsProfile />} />
+            <Route path="currency" element={<SettingsProfile />} />
             <Route path="profile" element={<SettingsProfile />} />
           </Route>
 
