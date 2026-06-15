@@ -1,27 +1,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetDashboardOverviewDataQuery } from "../api/dashboardOverview.endpoint"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Line, LineChart, Pie, PieChart, Cell, XAxis, YAxis, ResponsiveContainer } from "recharts"
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const chartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "hsl(var(--chart-1))",
-  },
-  users: {
-    label: "Users",
-    color: "hsl(var(--chart-2))",
-  },
-  videos: {
-    label: "Videos",
-    color: "hsl(var(--chart-3))",
-  },
-  series: {
-    label: "Series",
-    color: "hsl(var(--chart-4))",
-  },
-} as const
+// const chartConfig = {
+//   revenue: {
+//     label: "Revenue",
+//     color: "hsl(var(--chart-1))",
+//   },
+//   users: {
+//     label: "Users",
+//     color: "hsl(var(--chart-2))",
+//   },
+//   videos: {
+//     label: "Videos",
+//     color: "hsl(var(--chart-3))",
+//   },
+//   series: {
+//     label: "Series",
+//     color: "hsl(var(--chart-4))",
+//   },
+// } as const
 
 const DashboardPage = () => {
   const { data: dashboardData, isLoading, error } = useGetDashboardOverviewDataQuery()
@@ -39,21 +38,21 @@ const DashboardPage = () => {
   const latestVideos = dashboardData?.data?.latestVideos || []
 
   // Mock data for charts (since API doesn't provide this data yet)
-  const revenueData = [
-    { month: "Jan", revenue: 4000 },
-    { month: "Feb", revenue: 3000 },
-    { month: "Mar", revenue: 5000 },
-    { month: "Apr", revenue: 4500 },
-    { month: "May", revenue: 6000 },
-    { month: "Jun", revenue: 5500 },
-  ]
+  // const revenueData = [
+  //   { month: "Jan", revenue: 4000 },
+  //   { month: "Feb", revenue: 3000 },
+  //   { month: "Mar", revenue: 5000 },
+  //   { month: "Apr", revenue: 4500 },
+  //   { month: "May", revenue: 6000 },
+  //   { month: "Jun", revenue: 5500 },
+  // ]
 
-  const coinsData = [
-    { name: "Free Coins", value: 400, color: "#0088FE" },
-    { name: "Premium Coins", value: 300, color: "#00C49F" },
-    { name: "Bonus Coins", value: 200, color: "#FFBB28" },
-    { name: "Gift Coins", value: 100, color: "#FF8042" },
-  ]
+  // const coinsData = [
+  //   { name: "Free Coins", value: 400, color: "#0088FE" },
+  //   { name: "Premium Coins", value: 300, color: "#00C49F" },
+  //   { name: "Bonus Coins", value: 200, color: "#FFBB28" },
+  //   { name: "Gift Coins", value: 100, color: "#FF8042" },
+  // ]
 
   const topSeriesData = [
     { name: "Demon Slayer", views: 12500, revenue: 2500 },

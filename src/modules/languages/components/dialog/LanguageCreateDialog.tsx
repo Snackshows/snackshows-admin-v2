@@ -12,7 +12,6 @@ import toast from "react-hot-toast"
 
 interface LanguageCreateDialogProps {
   children: React.ReactNode
-  onSave?: (data: z.infer<typeof languageCreateFormSchema>) => void
 }
 
 const languageCreateFormSchema = z.object({
@@ -20,9 +19,9 @@ const languageCreateFormSchema = z.object({
   isActive: z.boolean().optional(),
 })
 
-export function LanguageCreateDialog({ children, onSave }: LanguageCreateDialogProps) {
+export function LanguageCreateDialog({ children }: LanguageCreateDialogProps) {
   const [open, setOpen] = useState(false)
-  const { mutateAsync: createLanguage,isPending } = useCreateLanguageMutation()
+  const { mutateAsync: createLanguage, } = useCreateLanguageMutation()
 
   const form = useForm<z.infer<typeof languageCreateFormSchema>>({
     resolver: zodResolver(languageCreateFormSchema),
