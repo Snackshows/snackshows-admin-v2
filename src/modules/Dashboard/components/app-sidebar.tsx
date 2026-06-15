@@ -13,7 +13,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon, LayoutBottomIcon, LoginSquare02Icon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon, VoiceIcon } from "@hugeicons/core-free-icons"
+import { ClipboardListIcon, Clock02Icon, ComputerIcon, Film02Icon,  LoginSquare02Icon, Money03Icon, Settings01Icon, UserAccountIcon, UserShield01Icon, Video02Icon, VoiceIcon } from "@hugeicons/core-free-icons"
 import { Link, useLocation } from "react-router"
 
 // This is sample data.
@@ -158,6 +158,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
+
+  console.log(" location.pathname ", location.pathname);
   return (
     <Sidebar variant="floating" {...props} >
       <SidebarHeader >
@@ -196,7 +198,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       <SidebarMenuSubItem key={item.title} >
                         <SidebarMenuSubButton asChild isActive={location.pathname === item.url} className={
                           location.pathname === item.url
-                            ? "font-medium bg-primary"
+                            ? "font-bold bg-primary text-primary"
                             : ""
                         }>
                           <Link to={item.url}>

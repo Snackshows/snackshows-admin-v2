@@ -67,7 +67,7 @@ export function AddNewEpisodeDialog({ children, lastEpisodeNumber, seriesId }: A
 
       formData.append('seriesId', seriesId);
       formData.append('title', data.episodeName);
-      formData.append('description', data.episodeDescription);
+      formData.append('description', data.episodeDescription || "");
       formData.append('episodeNumber', data.episodeNumber.toString());
       formData.append('isPaid', data.isPaid ? 'true' : 'false');
       formData.append('isLocked', data.isLocked ? 'true' : 'false');

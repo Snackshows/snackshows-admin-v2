@@ -21,6 +21,8 @@ import Settings from './modules/settings/pages/Settings'
 import SettingsProfile from './modules/settings/pages/SettingsProfile'
 import LanguageList from './modules/languages/Pages/LanguageList'
 import SubscriptionsPage from './modules/Subscription/pages/Subscriptions'
+import UserProfilePage from './modules/settings/pages/UserProfilePage'
+import CurrencyPage from './modules/settings/pages/Currency'
 
 
 function App() {
@@ -70,8 +72,8 @@ function App() {
             <Route path="storage" element={<SettingsProfile />} />
             <Route path="payment" element={<SettingsProfile />} />
             <Route path="report-reasons" element={<SettingsProfile />} />
-            <Route path="currency" element={<SettingsProfile />} />
-            <Route path="profile" element={<SettingsProfile />} />
+            <Route path="currency" element={<CurrencyPage />} />
+            <Route path="profile" element={<UserProfilePage />} />
           </Route>
 
         </Route>

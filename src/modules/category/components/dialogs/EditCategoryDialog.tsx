@@ -91,8 +91,8 @@ export function EditCategoryDialog({
         formData.append("image", data.image)
       }
       formData.append("id", categoryId)
-      formData.append("name", data.name)
-      formData.append("description", data.description)
+      formData.append("name", data.name || "")
+      formData.append("description", data.description || "")
       formData.append("isActive", String(data.isActive))
 
       // console.table([...formData.entries()])

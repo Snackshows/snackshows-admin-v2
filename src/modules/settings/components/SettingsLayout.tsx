@@ -5,7 +5,7 @@ import { Link, Outlet, useLocation } from 'react-router'
 const SettingsLayout = () => {
 
 
-    const pagePath = window.location.pathname.split('/')[2];
+    // const pagePath = window.location.pathname.split('/')[2];
     const location = useLocation();
  
     const tabs = [

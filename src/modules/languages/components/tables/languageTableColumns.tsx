@@ -4,7 +4,7 @@ import { Edit01Icon, Delete01Icon, LoaderCircle } from "@hugeicons/core-free-ico
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Language } from "../../api/languagrList/languageList.types"
-import { useDeleteLanguageMutation, useUpdateLanguageMutation } from "../../api/languagrList/languageList.endpoints"
+import { useDeleteLanguageMutation } from "../../api/languagrList/languageList.endpoints"
 import { LanguageEditDialog } from "../dialog/LanguageEditDialog"
 import toast from "react-hot-toast"
 
