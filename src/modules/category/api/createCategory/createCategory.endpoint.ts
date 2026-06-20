@@ -1,7 +1,7 @@
 import apiClient from "@/service/client/apiClient";
 import type { GetAllCategoriesResponse } from "./createCategory.interface";
-import { useMutation, useQuery } from "@tanstack/react-query";
-
+import { useMutation, useQuery, } from "@tanstack/react-query";
+// const queryClient = useQueryClient();
 const getAllCategory = async () => {
   const response = await apiClient.get<GetAllCategoriesResponse>("/category");
   console.log(response.data.data)
@@ -14,7 +14,7 @@ const createCategory = async (payload: FormData): Promise<{
   success: boolean,
   errors: null
 }> => {
-  const response = await apiClient.post("/category/create",payload, {
+  const response = await apiClient.post("/category/create", payload, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
@@ -34,6 +34,11 @@ export const useGetCategoriesQuery = () => {
 export const useCreateCategoryMutation = () => {
   return useMutation({
     mutationKey: ["createCategory"],
-    mutationFn: createCategory
+    mutationFn: createCategory,
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: ["categories"],
+    //   });
+    // },
   });
 };

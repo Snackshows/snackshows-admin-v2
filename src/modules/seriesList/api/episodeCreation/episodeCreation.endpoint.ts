@@ -1,6 +1,6 @@
 import apiClient from "@/service/client/apiClient";
 import { useMutation } from "@tanstack/react-query";
-import type { EpisodeCreationResponse } from "./episodeCreation.types";
+import type { EpisodeCreationResponse, UploadPresignedUrlResponse } from "./episodeCreation.types";
 
 const addNewEpisode = async (payload: FormData) => {
   const response = await apiClient.post("/episode/create", payload, {
@@ -13,17 +13,19 @@ const addNewEpisode = async (payload: FormData) => {
 }
 
 const getUploadPresignedUrl = async (payload: { episodeId: string, fileName: string, contentType: string }) => {
-  const response = await apiClient.post("/episode/video/presign", payload);
+  const response = await apiClient.post<UploadPresignedUrlResponse>("/episode/video/presign", payload);
   return response.data;
 }
 
-const uploadVideoToS3 = async (payload: { presignedUrl: string, file: File }) => {
-  const response = await apiClient.put(payload.presignedUrl, payload.file, {
+export const uploadVideoToS3 = async (payload: { presignedUrl: string, file: File }) => {
+  const response = await fetch(payload.presignedUrl, {
+    method: "PUT",
+    body: payload.file,
     headers: {
-      "Content-Type": payload.file.type
-    }
+      "Content-Type": payload.file.type,
+    },
   });
-  return response.data;
+  return response
 }
 
 

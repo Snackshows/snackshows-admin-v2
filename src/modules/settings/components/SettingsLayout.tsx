@@ -1,4 +1,4 @@
-import { CreditCardAddIcon, Database02Icon, Dollar01Icon, Settings01Icon, User02Icon } from '@hugeicons/core-free-icons';
+import {  Dollar01Icon, Settings01Icon, User02Icon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import { Link, Outlet, useLocation } from 'react-router'
 
@@ -14,26 +14,26 @@ const SettingsLayout = () => {
             path: '/settings',
             icon: Settings01Icon,
         },
-        {
-            name: 'Ads Setting',
-            path: '/settings/ads-setting',
-            icon: Database02Icon,
-        },
-        {
-            name: 'Storage',
-            path: '/settings/storage',
-            icon:Database02Icon
-        },
-        {
-            name: 'Payment',
-            path: '/settings/payment',
-            icon: CreditCardAddIcon
-        },
-        {
-            name: 'Report Reasons',
-            path: '/settings/report-reasons',
-            icon: Dollar01Icon
-        },
+        // {
+        //     name: 'Ads Setting',
+        //     path: '/settings/ads-setting',
+        //     icon: Database02Icon,
+        // },
+        // {
+        //     name: 'Storage',
+        //     path: '/settings/storage',
+        //     icon:Database02Icon
+        // },
+        // {
+        //     name: 'Payment',
+        //     path: '/settings/payment',
+        //     icon: CreditCardAddIcon
+        // },
+        // {
+        //     name: 'Report Reasons',
+        //     path: '/settings/report-reasons',
+        //     icon: Dollar01Icon
+        // },
         {
             name: 'Currency',
             path: '/settings/currency',
