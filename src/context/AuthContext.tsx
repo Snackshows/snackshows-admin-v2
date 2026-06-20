@@ -19,7 +19,8 @@ export interface User {
 	name: string
 	email: string;
 	phone: string;
-	role?: number
+	role?: number;
+	image:string
 }
 
 interface AuthContextType {
@@ -53,6 +54,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 				email: response.email,
 				role: 1,
 				phone: response.phone,
+				image: response.image,
 
 				// avatar: response.avatar,
 			});

@@ -9,12 +9,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { LockPasswordIcon, Upload01Icon } from "@hugeicons/core-free-icons";
+import { Loader, LockPasswordIcon, Upload01Icon } from "@hugeicons/core-free-icons";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
+import { Textarea } from "@/components/ui/textarea";
+import { useGetUserProfile, useUpdatePassword, useUpdateProfilePicture, useUpdateUserProfile } from "../api/profile/profile.endpoints";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const profileFormSchema = z.object({
     fullName: z.string().min(2, "Full name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
+    bio: z.string().optional(),
+
 });
 
 const passwordFormSchema = z
@@ -30,28 +37,112 @@ const passwordFormSchema = z
         path: ["confirmPassword"],
     });
 
+const profilePictureSchema = z.object({
+    file: z.instanceof(File).refine((file) => file.size > 0, "Please select a file"),
+});
+
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+type ProfilePictureFormValues = z.infer<typeof profilePictureSchema>;
 
 const UserProfilePage = () => {
+
+
+    const { data: userProfile, refetch } = useGetUserProfile();
+
+    const { mutateAsync: updateProfile, isPending: isUpdatingProfile } = useUpdateUserProfile();
+
+    const { mutateAsync: updatePassword, isPending: isUpdatingPassword } = useUpdatePassword();
+
+    const { mutateAsync: updateProfilePicture, isPending: isUpdatingProfilePicture } = useUpdateProfilePicture();
+
+
+    const { user } = useAuth()
     const profileForm = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
-        defaultValues: {
-            fullName: "Demo Admin",
-            email: "demo@admin.com",
-        },
     });
 
     const passwordForm = useForm<PasswordFormValues>({
         resolver: zodResolver(passwordFormSchema),
     });
 
-    const onProfileSubmit = (data: ProfileFormValues) => {
-        console.log("Profile data:", data);
+    const profilePictureForm = useForm<ProfilePictureFormValues>({
+        resolver: zodResolver(profilePictureSchema),
+    });
+
+
+    console.log("userProfile", userProfile);
+    useEffect(() => {
+        if (userProfile) {
+            profileForm.reset({
+                fullName: userProfile.data.name,
+                email: userProfile.data.email,
+                bio: userProfile.data.bio || "",
+            });
+        }
+    }, [userProfile]);
+
+    const { watch } = profileForm;
+    // const { formState: { isDirty } } = passwordForm
+    const profileName = watch("fullName");
+
+
+    const onProfileSubmit = async (values: ProfileFormValues) => {
+
+        try {
+
+            const payload = {
+                id: user?.id,
+                name: values.fullName,
+                email: values.email,
+                phone: userProfile?.data.phone || "",
+                bio: values.bio || ""
+            }
+            await updateProfile(payload);
+
+            toast.success("Profile updated successfully");
+            refetch();
+        } catch (error) {
+            toast.error("Failed to update profile");
+            console.log("Profile data:", values);
+        }
+
     };
 
-    const onPasswordSubmit = (data: PasswordFormValues) => {
-        console.log("Password data:", data);
+    const onPasswordSubmit = async (data: PasswordFormValues) => {
+
+        try {
+
+            const payload = {
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+                confirmPassword: data.confirmPassword,
+            }
+
+            await updatePassword(payload);
+
+            toast.success("Password updated successfully");
+            passwordForm.reset();
+
+        } catch (error) {
+            console.log("Password data:", data);
+        }
+    };
+
+    const onHandleProfilePicture = async (values: ProfilePictureFormValues) => {
+        const file = values.file;
+
+        try {
+            const formData = new FormData();
+            if (file) {
+                if (isUpdatingProfilePicture) return;
+                formData.append('image', file);
+            }
+            await updateProfilePicture(formData);
+            toast.success("Profile picture updated successfully");
+        } catch (error) {
+            console.log("Profile picture error:", error);
+        }
     };
 
     return (
@@ -62,16 +153,46 @@ const UserProfilePage = () => {
                     <CardTitle>Profile Details</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
-                        <section className="flex gap-6">
-                            {/* Profile Picture Section */}
+
+                    <section className="flex gap-6">
+                        {/* Profile Picture Section */}
+                        <form onSubmit={profilePictureForm.handleSubmit(onHandleProfilePicture)}>
                             <div className="flex flex-col items-center gap-4">
+                                
                                 <Avatar className="w-24 h-24 rounded-full aspect-square">
-                                    <AvatarImage src="/placeholder-avatar.png" alt="Profile" />
-                                    <AvatarFallback>DA</AvatarFallback>
+                                    {
+                                        isUpdatingProfilePicture ? (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <HugeiconsIcon icon={Loader} className="animate-spin" />
+                                            </div>
+                                        ) : (
+                                            <AvatarImage src={user?.image || "/placeholder-avatar.png"} alt="Profile" />
+                                        )
+                                    }
+                                    <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex flex-col items-center gap-2">
-                                    <Button variant="outline" size="sm">
+                                    <Controller
+                                        name="file"
+                                        control={profilePictureForm.control}
+                                        render={({ field: { onChange, name, ref }, fieldState }) => (
+                                            <Field data-invalid={fieldState.invalid}>
+                                                
+                                                <Input
+                                                    type="file"
+                                                    name={name}
+                                                    ref={ref}
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        onChange(e.target.files?.[0])
+                                                    }}
+                                                />
+
+                                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                            </Field>
+                                        )}
+                                    />
+                                    <Button variant="outline" size="sm" type="submit">
                                         <HugeiconsIcon icon={Upload01Icon} />Upload Photo
                                     </Button>
                                     <p className="text-xs text-muted-foreground">
@@ -79,63 +200,87 @@ const UserProfilePage = () => {
                                     </p>
                                 </div>
                             </div>
+                        </form>
 
-                            {/* Profile Form */}
+                        {/* Profile Form */}
 
-                            <form
-                                onSubmit={profileForm.handleSubmit(onProfileSubmit)}
-                                className=" flex flex-col w-full gap-4"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="text-base font-medium">Demo Admin</div>
-                                    <Badge variant="secondary">Administrator</Badge>
-                                </div>
-                                <FieldGroup className="w-full  flex flex-row gap-4">
-                                    <Controller
-                                        name="fullName"
-                                        control={profileForm.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    aria-invalid={fieldState.invalid}
-                                                    placeholder="Enter your full name"
-                                                    autoComplete="off"
-                                                />
+                        <form
+                            onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                            className=" flex flex-col w-full gap-4"
+                        >
+                            <div className="flex items-start flex-col justify-start gap-3">
+                                <div className="text-base font-medium">{profileName}</div>
 
-                                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                                            </Field>
-                                        )}
-                                    />
-                                    <Controller
-                                        name="email"
-                                        control={profileForm.control}
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor={field.name}>Email Address</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    aria-invalid={fieldState.invalid}
-                                                    placeholder="Enter your email"
-                                                    autoComplete="off"
-                                                />
+                                {
+                                    user?.role === 1 && (
+                                        <Badge variant="secondary">Administration</Badge>
+                                    )
+                                }
+                            </div>
+                            <FieldGroup className="w-full  grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Controller
+                                    name="fullName"
+                                    control={profileForm.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor={field.name}>Full Name</FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id={field.name}
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Enter your full name"
+                                                autoComplete="off"
+                                            />
 
-                                                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                                            </Field>
-                                        )}
-                                    />
-                                </FieldGroup>
-                                <FieldGroup className="w-full  flex flex-row gap-4">
-                                    <Button type="submit">
-                                        Save Profile Changes
-                                    </Button>
-                                </FieldGroup>
-                            </form>
-                        </section>
-                    </form>
+                                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller
+                                    name="email"
+                                    control={profileForm.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor={field.name}>Email Address</FieldLabel>
+                                            <Input
+                                                {...field}
+                                                id={field.name}
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Enter your email"
+                                                autoComplete="off"
+                                            />
+
+                                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                        </Field>
+                                    )}
+                                />
+                                <Controller
+                                    name="bio"
+                                    control={profileForm.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                                            <Textarea
+                                                {...field}
+                                                id={field.name}
+                                                aria-invalid={fieldState.invalid}
+                                                placeholder="Enter your description"
+                                                autoComplete="off"
+                                            />
+
+                                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                                        </Field>
+                                    )}
+                                />
+                            </FieldGroup>
+                            <FieldGroup className="w-full  flex flex-row gap-4">
+                                <Button disabled={isUpdatingProfile} type="submit">
+                                    {isUpdatingProfile ? "Saving..." : "Save Profile Changes"}
+                                </Button>
+                            </FieldGroup>
+                        </form>
+                    </section>
+
                 </CardContent>
             </Card>
 
@@ -219,8 +364,8 @@ const UserProfilePage = () => {
                             </ul>
 
 
-                            <Button type="button" >
-                                Update Password
+                            <Button disabled={isUpdatingPassword} type="button" >
+                                {isUpdatingPassword ? "Updating..." : "Update Password"}
                             </Button>
 
                         </FieldGroup>

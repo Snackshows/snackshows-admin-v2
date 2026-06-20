@@ -1,5 +1,5 @@
 import apiClient from "@/service/client/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { GetAllEmployeesResponse, EmployeeData } from "./staffManagement.types";
 
 const getAllEmployees = async () => {
@@ -11,6 +11,11 @@ const getAllEmployees = async () => {
 const getEmployeeById = async (id: string) => {
   const response = await apiClient.get<{ data: EmployeeData }>(`/employee/${id}`);
   return response.data.data;
+}
+
+const addNewEmployee = async (data: any) => {
+  const response = await apiClient.post("/employee/create", data);
+  return response.data;
 }
 
 ///Api function
@@ -26,5 +31,11 @@ export const useGetEmployeeByIdQuery = (id: string) => {
     queryKey: ["employee", id],
     queryFn: () => getEmployeeById(id),
     enabled: !!id
+  });
+};
+
+export const useAddNewEmployeeMutation = () => {
+  return useMutation({
+    mutationFn: (data: any) => addNewEmployee(data)
   });
 };

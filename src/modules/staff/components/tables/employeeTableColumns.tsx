@@ -8,6 +8,7 @@ import type { EmployeeData } from "../../api/staffManagement/staffManagement.typ
 import { Link } from "react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { EditStaffDialog } from "../Dialog/EditStaffDialog"
 
 export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
   {
@@ -108,12 +109,15 @@ export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
     accessorKey: "id",
     header: "Action",
     cell: ({ row }) => {
-      const employee = row.original
+      const staffName = row.original.name
+    
       return (
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => (window as any).handleEditStaff?.(employee)}>
-            <HugeiconsIcon icon={TaskEdit02Icon} />
-          </Button>
+          <EditStaffDialog staffName={staffName}>
+            <Button size="sm" variant="outline">
+              <HugeiconsIcon icon={TaskEdit02Icon} />
+            </Button>
+          </EditStaffDialog>
         </div>
       )
     },

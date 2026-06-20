@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { useGetCreateSeriesDataQuery, useGetCreateSeriesDataSubmitMutation } from "../../api/seriesManagement/seriesManagement.endpoint"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import toast from "react-hot-toast"
+import { DatePicker } from "@/components/ui/date-picker"
 
 interface SeriesCreateDialogProps {
   children: React.ReactNode
@@ -25,10 +26,9 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
 
   const seriesCreateFormSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().max(200, "Description should be less than 200 characters"),
     banner: z.file(),
     thumbnail: z.file(),
-
     language: z.string().min(1, "Language is required"),
     category: z.string().min(1, "At least one category is required"),
     releaseDate: z.string().min(1, "Release date is required"),
@@ -286,10 +286,8 @@ export function SeriesCreateDialog({ children, }: SeriesCreateDialogProps) {
                       <FieldLabel htmlFor="form-rhf-demo-title">
                         Release Date
                       </FieldLabel>
-                      <Input
-                        type="date"
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
+                      <DatePicker
+                        {...field}
                         aria-invalid={fieldState.invalid}
                       />
                     </div>

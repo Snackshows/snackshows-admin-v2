@@ -46,7 +46,7 @@ function App() {
           {/* Series */}
 
           <Route path="/series" element={<SeriesListPage />} />
-          <Route path="/series/create" element={<SeriesListPage />} />
+
           <Route path="/series/:seriesId" element={<SeriesDetailsPage />} />
 
           {/* Episode */}

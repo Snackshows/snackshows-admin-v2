@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/date-picker"
-import { useAddNewEpisodeMutation, useGetUploadPresignedUrlMutation, useUploadVideoToS3Mutation } from "../../api/episodeCreation/episodeCreation.endpoint"
+import { uploadVideoToS3, useAddNewEpisodeMutation, useGetUploadPresignedUrlMutation,  } from "../../api/episodeCreation/episodeCreation.endpoint"
 import toast from "react-hot-toast"
 
 const addEpisodeFormSchema = z.object({
@@ -80,7 +80,7 @@ export function AddNewEpisodeDialog({ children, lastEpisodeNumber, seriesId }: A
       setEpisodeId(response.data.id)
 
       toast.success("Episode added successfully")
-      // setOpen(false)
+
 
       setFormStep(2)
 
@@ -281,7 +281,7 @@ export function AddNewEpisodeDialog({ children, lastEpisodeNumber, seriesId }: A
         {/* Upload Video */}
         {formStep === 2 && episodeId?.length > 0 && (
           <section>
-            <UploadVideoForm episodeId={episodeId} />
+            <UploadVideoForm episodeId={episodeId} setOpen={setOpen} />
 
           </section>)}
 
@@ -294,12 +294,12 @@ export function AddNewEpisodeDialog({ children, lastEpisodeNumber, seriesId }: A
 
 
 
-const UploadVideoForm = ({ episodeId }: { episodeId: string }) => {
+const UploadVideoForm = ({ episodeId,setOpen }: { episodeId: string, setOpen: (open: boolean) => void }) => {
 
   const { mutateAsync: getUploadPresignedUrl, isPending: isGettingPresignedUrl } = useGetUploadPresignedUrlMutation()
 
 
-  const { mutateAsync: uploadVideoToS3, isPending: isUploadingVideo } = useUploadVideoToS3Mutation()
+
 
   const uploadVideoFormSchema = z.object({
     video: z.file().optional(),
@@ -311,11 +311,7 @@ const UploadVideoForm = ({ episodeId }: { episodeId: string }) => {
 
 
   const onSubmit = async (values: z.infer<typeof uploadVideoFormSchema>) => {
-
-
     try {
-
-
       const payload1 = {
         episodeId,
         fileName: values.video?.name || "",
@@ -328,18 +324,19 @@ const UploadVideoForm = ({ episodeId }: { episodeId: string }) => {
 
       console.log("Upload presigned URL response:", response)
 
+      console.log("Upload presigned URL response data:", response.data)
+
       const payload2 = {
-        presignedUrl: response.presignedUrl,
+        presignedUrl: response.data.uploadUrl,
         file: values.video as File,
       }
 
       await uploadVideoToS3(payload2)
 
-
+      toast.success("Video uploaded successfully")
       console.log("Submitting episode data:", payload1)
 
-
-
+      setOpen(false)
     } catch (error) {
       console.error("Error submitting episode:", error)
     }
@@ -352,9 +349,9 @@ const UploadVideoForm = ({ episodeId }: { episodeId: string }) => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
 
-          <section className="grid grid-cols-2 gap-4 ">
+          <section className="flex flex-col gap-4 ">
 
-            <h3>Upload Video</h3>
+
             <Controller
               name="video"
               control={form.control}
@@ -393,7 +390,7 @@ const UploadVideoForm = ({ episodeId }: { episodeId: string }) => {
               Cancel
             </Button>
           </DialogClose>
-          <Button type="submit" disabled={isGettingPresignedUrl || isUploadingVideo} className="cursor-pointer">Submit</Button>
+          <Button type="submit" disabled={isGettingPresignedUrl} className="cursor-pointer">Submit</Button>
         </DialogFooter>
       </form>
     </section>

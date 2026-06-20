@@ -11,3 +11,4 @@ export const getUserData = async (): Promise<{
 	const response = await apiClient(`/profile`);
 	return response.data.data;
 };
+
