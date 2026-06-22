@@ -1,6 +1,6 @@
 import apiClient from "@/service/client/apiClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { GetAllEmployeesResponse, EmployeeData } from "./staffManagement.types";
+import type { GetAllEmployeesResponse, EmployeeData, GetNewEmployeeDataResponse } from "./staffManagement.types";
 
 const getAllEmployees = async () => {
   const response = await apiClient.get<GetAllEmployeesResponse>("/employee");
@@ -18,6 +18,29 @@ const addNewEmployee = async (data: any) => {
   return response.data;
 }
 
+const getNewEmployeeData = async () => {
+  const response = await apiClient.get<GetNewEmployeeDataResponse>("/employee/create");
+  return response.data
+}
+
+const deleteEmployee = async (employeeId: string) => {
+  const response = await apiClient.delete(`/employee/${employeeId}`);
+  return response.data;
+}
+
+const updateEmployee = async(payload: {
+  id: string
+  name: string;
+  email: string;
+  phone: string;
+  role: number;
+  bio: string;
+  password: string;
+  isBlocked: boolean;
+}) => {
+  const response = await apiClient.put(`/employee`, payload);
+  return response.data;
+}
 ///Api function
 export const useGetEmployeesQuery = () => {
   return useQuery({
@@ -26,16 +49,35 @@ export const useGetEmployeesQuery = () => {
   });
 };
 
-export const useGetEmployeeByIdQuery = (id: string) => {
+export const useGetEmployeeByIdQuery = (id: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ["employee", id],
     queryFn: () => getEmployeeById(id),
-    enabled: !!id
+    enabled: enabled
+  });
+};
+
+export const useGetNewEmployeeDataQuery = () => {
+  return useQuery({
+    queryKey: ["newEmployeeData"],
+    queryFn: getNewEmployeeData
   });
 };
 
 export const useAddNewEmployeeMutation = () => {
   return useMutation({
     mutationFn: (data: any) => addNewEmployee(data)
+  });
+};
+
+export const useDeleteEmployeeMutation = () => {
+  return useMutation({
+    mutationFn: deleteEmployee
+  });
+};
+
+export const useUpdateEmployeeMutation = () => {
+  return useMutation({
+    mutationFn: updateEmployee
   });
 };

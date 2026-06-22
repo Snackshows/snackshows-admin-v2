@@ -1,14 +1,17 @@
 
 
 
-import { UserAccountIcon, TaskEdit02Icon } from "@hugeicons/core-free-icons"
+import { UserAccountIcon, TaskEdit02Icon, UserRemove01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { EmployeeData } from "../../api/staffManagement/staffManagement.types"
-import { Link } from "react-router"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { EditStaffDialog } from "../Dialog/EditStaffDialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { useDeleteEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
+import toast from "react-hot-toast"
+import { Badge } from "@/components/ui/badge"
 
 export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
   {
@@ -23,21 +26,13 @@ export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
     header: "Profile",
     cell: ({ row }) => {
       const image = row.getValue("image") as string | null
-      const userId = row.getValue("id") as string
-
       return (
-        <Link
-          to={`/users/${userId}`}
-
-        >
-          <Avatar className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all">
-            <AvatarImage src={image || undefined} alt="Profile" />
-            <AvatarFallback>
-              <HugeiconsIcon icon={UserAccountIcon} />
-            </AvatarFallback>
-          </Avatar>
-
-        </Link>
+        <Avatar className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition-all">
+          <AvatarImage src={image || undefined} alt="Profile" />
+          <AvatarFallback>
+            <HugeiconsIcon icon={UserAccountIcon} />
+          </AvatarFallback>
+        </Avatar>
       )
     },
   },
@@ -45,17 +40,12 @@ export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
     accessorKey: "name",
     header: "Name",
     cell: ({ row }) => {
-
-      const userId = row.getValue("id") as string
       const name = row.getValue("name") as string
 
       return (
-        <Link
-          to={`/users/${userId}`}
-          className="text-left hover:text-blue-600 hover:underline transition-colors"
-        >
+        <span className="text-left">
           {name}
-        </Link>
+        </span>
       )
     },
   },
@@ -89,14 +79,24 @@ export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
     accessorKey: "isBlocked",
     header: "Status",
     cell: ({ row }) => {
-      const isBlocked = row.getValue("isBlocked")
-      return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${isBlocked ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-          {isBlocked ? "Blocked" : "Active"}
-        </span>
-      )
+      const isBlocked = row.original.isBlocked
+
+      if (isBlocked) {
+        return (
+          <Badge className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+            Blocked
+          </Badge>
+        )
+      }else{
+        return (
+          <Badge className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+            Active
+          </Badge>
+        )
+      }
     },
   },
+      
   {
     accessorKey: "joiningDate",
     header: "Joined On",
@@ -109,15 +109,52 @@ export const employeeTableColumns: ColumnDef<EmployeeData>[] = [
     accessorKey: "id",
     header: "Action",
     cell: ({ row }) => {
+      const staffId = row.original.id
       const staffName = row.original.name
-    
+      const { mutateAsync: deleteEmployee } = useDeleteEmployeeMutation()
+      const handleDelete = async () => {
+        try {
+
+          await deleteEmployee(staffId)
+          toast.success("Employee deleted successfully")
+        } catch (error) {
+          toast.error("Failed to delete employee")
+        }
+        
+      }
+
       return (
-        <div className="flex gap-2">
-          <EditStaffDialog staffName={staffName}>
+        <div className="flex gap-2 items-center justify-center">
+          <EditStaffDialog staffName={staffName} staffId={staffId}>
             <Button size="sm" variant="outline">
               <HugeiconsIcon icon={TaskEdit02Icon} />
             </Button>
           </EditStaffDialog>
+          <Dialog>
+            <DialogTrigger>
+              <Button size="sm"  variant="destructive">
+                <HugeiconsIcon icon={UserRemove01Icon} />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete your account
+                  and remove your data from our servers.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <DialogClose>
+                  <Button onClick={() => handleDelete()} variant="destructive">Delete</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </div>
       )
     },

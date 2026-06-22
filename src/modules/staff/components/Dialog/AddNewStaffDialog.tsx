@@ -8,7 +8,8 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import toast from "react-hot-toast"
-import { useAddNewEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
+import { useAddNewEmployeeMutation, useGetNewEmployeeDataQuery } from "../../api/staffManagement/staffManagement.endpoint"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface AddNewStaffDialogProps {
     children: React.ReactNode
@@ -26,6 +27,7 @@ const staffCreateFormSchema = z.object({
 export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
     const [open, setOpen] = useState(false)
     const { mutateAsync: createEmployee, isPending } = useAddNewEmployeeMutation()
+    const { data: newEmployeeData } = useGetNewEmployeeDataQuery()
 
     const form = useForm<z.infer<typeof staffCreateFormSchema>>({
         resolver: zodResolver(staffCreateFormSchema),
@@ -35,7 +37,7 @@ export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
             password: "",
             phone: "",
             bio: "",
-            role: "2",
+            
         },
     })
 
@@ -48,7 +50,7 @@ export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
                 password: data.password,
                 phone: data.phone,
                 bio: data.bio || "",
-                role: Number(data.role),
+                role: parseInt(data.role),
             }
             await createEmployee(payload)
             toast.success("Staff created successfully")
@@ -126,7 +128,7 @@ export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
                                     <Input
                                         {...field}
                                         id="staff-password"
-                                        type="password"
+                                        
                                         aria-invalid={fieldState.invalid}
                                         placeholder="Enter password"
                                         autoComplete="off"
@@ -187,15 +189,25 @@ export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
                                     <FieldLabel htmlFor="staff-role">
                                         Role
                                     </FieldLabel>
-                                    <select
-                                        {...field}
-                                        id="staff-role"
-                                        aria-invalid={fieldState.invalid}
-                                        className="h-9 w-full min-w-0 rounded-3xl border border-transparent bg-input/50 px-3 py-1 text-base transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
-                                    >
-                                        <option value={1}>Admin</option>
-                                        <option value={2}>Staff</option>
-                                    </select>
+
+                                    <Select name={field.name} value={field.value}
+                                        onValueChange={field.onChange}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {
+                                                    newEmployeeData?.data?.roles?.map((role) => (
+                                                        <SelectItem key={role.id} value={role.id.toString()}>
+                                                            {role.name}
+                                                        </SelectItem>
+                                                    ))
+                                                }
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
@@ -205,7 +217,7 @@ export function AddNewStaffDialog({ children }: AddNewStaffDialogProps) {
                     </FieldGroup>
                     <DialogFooter className="flex justify-end mt-6">
                         <DialogClose>
-                            <Button type="button" variant="outline">
+                            <Button onClick={() => form.reset()} type="button" variant="outline">
                                 Cancel
                             </Button>
                         </DialogClose>

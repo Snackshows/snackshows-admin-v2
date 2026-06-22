@@ -23,3 +23,8 @@ export const loginService = async ({
 
 	return response;
 };
+
+export const logoutService = async () => {
+	const response = await apiClient.post(`/auth/logout`);
+	return response;
+};

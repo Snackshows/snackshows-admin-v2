@@ -3,6 +3,7 @@ export interface EmployeeData {
   name: string;
   email: string;
   phone: string;
+  bio: string;
   image: string | null;
   role: number;
   isBlocked: boolean;
@@ -23,4 +24,16 @@ export interface GetAllEmployeesResponse {
   message: string;
   success: boolean;
   data: EmployeesData;
+}
+
+export interface GetNewEmployeeDataResponse {
+  statusCode: number;
+  message: string;
+  success: boolean;
+  data: {
+    roles: {
+      id: number;
+      name: string;
+    }[];
+  };
 }
