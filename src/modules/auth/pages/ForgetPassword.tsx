@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/context/AuthContext';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router';
+import { Link} from 'react-router';
 import forgetPasswordFormSchema, { type ForgetPasswordFormValues } from '../schema/forgetPassword.schema';
 import toast from 'react-hot-toast';
 import { useForgetPasswordMutation } from '../api/forgetPassword/forgetPassword.endpoint';
@@ -27,11 +27,12 @@ const ForgetPasswordPage = () => {
             const response = await forgetPasswordMutate({
                 email: data.email,
             })
+            setIsSent(true)
 
-            toast.success("Login successful")
+            toast.success("Password reset link has been sent to your email")
             console.log(response)
         } catch (error) {
-            toast.error("Login failed")
+            toast.error("Failed to send password reset link")
             console.error(error)
         }
 

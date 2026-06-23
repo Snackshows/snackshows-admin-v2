@@ -8,7 +8,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import toast from "react-hot-toast"
-import { useAddNewEmployeeMutation, useGetEmployeeByIdQuery, useGetNewEmployeeDataQuery, useUpdateEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
+import {  useGetEmployeeByIdQuery, useGetNewEmployeeDataQuery, useUpdateEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/context/AuthContext"
 import { Switch } from "@/components/ui/switch"
@@ -57,6 +57,7 @@ export function EditStaffDialog({ children, staffName, staffId }: AddNewStaffDia
                 id: employeeData.id,
                 name: employeeData.name,
                 email: employeeData.email,
+                newPassword:"",
                 phone: employeeData.phone || "",
                 bio: employeeData.bio || "",
                 role: employeeData.role,
@@ -73,7 +74,7 @@ export function EditStaffDialog({ children, staffName, staffId }: AddNewStaffDia
                 name: value.name,
                 email: value.email,
                 password: value.newPassword,
-                phone: value.phone,
+                phone: value.phone || "",
                 bio: value.bio || "",
                 role: Number(value.role),
                 isBlocked: !value.isBlocked,
@@ -232,7 +233,7 @@ export function EditStaffDialog({ children, staffName, staffId }: AddNewStaffDia
                         />
 
                         {
-                            user.role === 1 && employeeData?.role !== 1 && (
+                            user?.role === 1 && employeeData?.role !== 1 && (
                                 <Controller
                                     name="role"
                                     control={form.control}

@@ -1,12 +1,12 @@
 import apiClient from "@/service/client/apiClient";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export const resetPasswordService = async ({
 	resetToken,
 	password,
 	comparedPassword
 }: {
-	resetToken: string;
+	resetToken: string|null;
 	password: string;
 	comparedPassword: string;
 }) => {

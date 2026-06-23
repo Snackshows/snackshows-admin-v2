@@ -1,5 +1,5 @@
 import apiClient from "@/service/client/apiClient";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, } from "@tanstack/react-query";
 
 export const forgetPasswordService = async ({
 	email,

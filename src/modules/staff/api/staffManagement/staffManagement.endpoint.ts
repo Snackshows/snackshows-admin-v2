@@ -35,7 +35,7 @@ const updateEmployee = async(payload: {
   phone: string;
   role: number;
   bio: string;
-  password: string;
+  password?: string;
   isBlocked: boolean;
 }) => {
   const response = await apiClient.put(`/employee`, payload);
