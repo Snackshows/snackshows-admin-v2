@@ -23,7 +23,7 @@ const LoginPage = () => {
             password: "",
         },
     })
-    const { formState: {  isSubmitting } } = form
+    const { formState: { isSubmitting } } = form
 
     async function onSubmit(data: LoginFormValues) {
         // Do something with the form values.
@@ -58,7 +58,11 @@ const LoginPage = () => {
 
                         <Card>
                             <CardHeader className="text-center">
-                                <CardTitle className="text-xl">Welcome back</CardTitle>
+                                <div className="flex justify-center">
+                                    <img src="/logo.png" alt="Logo" className="w-20 h-20" />
+                                </div>
+
+                                <CardTitle className="text-xl">Snackshows Admin</CardTitle>
                                 {/* <CardDescription>
                                     Login with your Apple or Google account
                                 </CardDescription> */}
@@ -137,8 +141,8 @@ const LoginPage = () => {
                         </Card>
                     </form>
                     <FieldDescription className="px-6 text-center">
-                        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-                        and <a href="#">Privacy Policy</a>.
+                        By clicking continue, you agree to our <Link to="/terms-of-service">Terms of Service</Link>{" "}
+                        and <Link to="/privacy-policy">Privacy Policy</Link>.
                     </FieldDescription>
                 </div>
 

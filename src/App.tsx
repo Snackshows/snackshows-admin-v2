@@ -23,15 +23,16 @@ import LanguageList from './modules/languages/Pages/LanguageList'
 import SubscriptionsPage from './modules/Subscription/pages/Subscriptions'
 import UserProfilePage from './modules/settings/pages/UserProfilePage'
 import CurrencyPage from './modules/settings/pages/Currency'
-
+import ForgetPasswordPage from './modules/auth/pages/ForgetPassword'
+import ResetPasswordPage from './modules/auth/pages/ResetPassword'
 
 function App() {
   return (
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/forgot-password" element={<LoginPage />} />
-      <Route path="/forgot-password" element={<LoginPage />} />
+      <Route path="/forget-password" element={<ForgetPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="*" element={<NotFound />} />
 
       {/* Protected Routes for App*/}

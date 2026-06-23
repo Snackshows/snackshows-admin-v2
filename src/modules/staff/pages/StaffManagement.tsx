@@ -21,7 +21,6 @@ const StaffManagementPage = () => {
         <SectionContent>
           <ControllableDataTable loading={isLoading} columns={employeeTableColumns} data={data || []} actionButton={
             <AddNewStaffDialog>
-
               <Button>
                 <HugeiconsIcon icon={Add01Icon} className="mr-2" />
                 Add New Staff

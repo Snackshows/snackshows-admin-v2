@@ -74,8 +74,8 @@ export function ControllableDataTable<TData, TValue>({
 	const end = Math.min(start + pageSize - 1, filtered);
 
 	return (
-		<div className="w-full">
-			<div className="flex flex-col-reverse justify-between gap-4 py-4 md:flex-row lg:items-center">
+		<div className="w-full ">
+			<div className="flex flex-col-reverse  justify-between gap-4 py-4 md:flex-row lg:items-center">
 				<span className="flex items-center gap-2">
 					Show
 					<select

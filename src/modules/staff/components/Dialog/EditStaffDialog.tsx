@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -8,51 +8,79 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import toast from "react-hot-toast"
-import { useAddNewEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
+import {  useGetEmployeeByIdQuery, useGetNewEmployeeDataQuery, useUpdateEmployeeMutation } from "../../api/staffManagement/staffManagement.endpoint"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useAuth } from "@/context/AuthContext"
+import { Switch } from "@/components/ui/switch"
+
 
 interface AddNewStaffDialogProps {
     children: React.ReactNode
     staffName: string
+    staffId: string
 }
 
 const staffCreateFormSchema = z.object({
+    id: z.string(),
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().optional(),
     phone: z.string().optional(),
     bio: z.string().optional(),
-    role: z.string().min(1, "Role is required"),
+    role: z.number(),
+    isBlocked: z.boolean(),
 })
 
-export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps) {
+export function EditStaffDialog({ children, staffName, staffId }: AddNewStaffDialogProps) {
     const [open, setOpen] = useState(false)
-    const { mutateAsync: createEmployee, isPending } = useAddNewEmployeeMutation()
+    const { user } = useAuth()
+    
+    const { mutateAsync: updateEmployee, isPending } = useUpdateEmployeeMutation()
+
+    const { data: employeeData } = useGetEmployeeByIdQuery(staffId,open)
+    const { data: employeeRolesData } = useGetNewEmployeeDataQuery()
 
     const form = useForm<z.infer<typeof staffCreateFormSchema>>({
         resolver: zodResolver(staffCreateFormSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            
-            phone: "",
-            bio: "",
-           
-        },
+
     })
+    const {  formState:{disabled} } = form
+
+    useEffect(() => {
+        console.log(employeeData)
+    }, [employeeData])
+
+
+    useEffect(() => {
+        if (employeeData) {
+            form.reset({
+                id: employeeData.id,
+                name: employeeData.name,
+                email: employeeData.email,
+                newPassword:"",
+                phone: employeeData.phone || "",
+                bio: employeeData.bio || "",
+                role: employeeData.role,
+                isBlocked: !employeeData.isBlocked,
+            })
+        }
+    }, [employeeData])
 
     async function onSubmit(value: z.infer<typeof staffCreateFormSchema>) {
         console.log(value)
         try {
             const payload = {
+                id: value.id,
                 name: value.name,
                 email: value.email,
                 password: value.newPassword,
-                phone: value.phone,
+                phone: value.phone || "",
                 bio: value.bio || "",
                 role: Number(value.role),
+                isBlocked: !value.isBlocked,
             }
-            await createEmployee(payload)
-            toast.success("Staff created successfully")
+            await updateEmployee(payload)
+            toast.success("Staff updated successfully")
             setOpen(false)
             form.reset()
             setOpen(false)
@@ -65,7 +93,7 @@ export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps)
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="w-full sm:max-w-[700px]">
                 <DialogHeader>
                     <DialogTitle>Edit {staffName} Details</DialogTitle>
                     <DialogDescription>
@@ -74,6 +102,27 @@ export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps)
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <FieldGroup className="gap-4">
+                        <Controller
+                            name="id"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <Field data-invalid={fieldState.invalid}>
+                                    <FieldLabel htmlFor="staff-name">
+                                        Employee ID
+                                    </FieldLabel>
+                                    <Input
+                                        {...field}
+                                        id="staff-name"
+                                        aria-invalid={fieldState.invalid}
+                                        placeholder="Enter employee ID"
+                                        disabled
+                                    />
+                                    {fieldState.invalid && (
+                                        <FieldError errors={[fieldState.error]} />
+                                    )}
+                                </Field>
+                            )}
+                        />
                         <Controller
                             name="name"
                             control={form.control}
@@ -123,7 +172,7 @@ export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps)
                             render={({ field, fieldState }) => (
                                 <Field data-invalid={fieldState.invalid}>
                                     <FieldLabel htmlFor="staff-password">
-                                        Password 
+                                        Password
                                     </FieldLabel>
                                     <Input
                                         {...field}
@@ -152,7 +201,8 @@ export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps)
                                         id="staff-phone"
                                         aria-invalid={fieldState.invalid}
                                         placeholder="Enter phone number"
-                                        autoComplete="off"
+                                        autoComplete="on"
+                                        type="tel"
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
@@ -181,39 +231,80 @@ export function EditStaffDialog({ children, staffName }: AddNewStaffDialogProps)
                                 </Field>
                             )}
                         />
-                        <Controller
-                            name="role"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <Field data-invalid={fieldState.invalid}>
-                                    <FieldLabel htmlFor="staff-role">
-                                        Role
-                                    </FieldLabel>
-                                    <select
-                                        {...field}
-                                        id="staff-role"
-                                        aria-invalid={fieldState.invalid}
-                                        className="h-9 w-full min-w-0 rounded-3xl border border-transparent bg-input/50 px-3 py-1 text-base transition-[color,box-shadow,background-color] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30"
-                                    >
-                                        <option value={1}>Admin</option>
-                                        <option value={2}>Staff</option>
-                                    </select>
-                                    {fieldState.invalid && (
-                                        <FieldError errors={[fieldState.error]} />
+
+                        {
+                            user?.role === 1 && employeeData?.role !== 1 && (
+                                <Controller
+                                    name="role"
+                                    control={form.control}
+                                    render={({ field, fieldState }) => (
+                                        <Field data-invalid={fieldState.invalid}>
+                                            <FieldLabel htmlFor="staff-role">
+                                                Role
+                                            </FieldLabel>
+
+                                            <Select name={field.name} value={field.value?.toString()}
+                                                onValueChange={field.onChange}>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select role" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        {
+                                                            employeeRolesData?.data?.roles?.map((role) => (
+                                                                <SelectItem key={role.id} value={role.id.toString()}>
+                                                                    {role.name}
+                                                                </SelectItem>
+                                                            ))
+                                                        }
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+
+                                            {fieldState.invalid && (
+                                                <FieldError errors={[fieldState.error]} />
+                                            )}
+                                        </Field>
                                     )}
-                                </Field>
-                            )}
-                        />
+                                />
+                            )
+                        }
+
+
+
+
                     </FieldGroup>
-                    <DialogFooter className="flex justify-end mt-6">
-                        <DialogClose>
-                            <Button type="button" variant="outline">
-                                Cancel
+                    <DialogFooter className="flex items-center sm:justify-between w-full  mt-6">
+                        <div className="flex items-center  gap-2">
+                            <Controller
+                                name="isBlocked"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid} >
+                                        <section className="flex gap-2">
+                                            <FieldLabel>User Active Status</FieldLabel>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        </section>
+
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
+                            />
+
+                        </div>
+                        <div className=" w-fit flex gap-2 items-center justify-center">
+
+                            <DialogClose>
+                                <Button type="button" variant="outline">
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button disabled={isPending || disabled} type="submit">
+                                {isPending ? "Saving..." : "Save"}
                             </Button>
-                        </DialogClose>
-                        <Button disabled={isPending} type="submit">
-                            {isPending ? "Adding..." : "Add Staff"}
-                        </Button>
+                        </div>
                     </DialogFooter>
                 </form>
             </DialogContent>
